@@ -1,0 +1,204 @@
+databaseChangeLog:
+  - changeSet:
+      id: create_schema_mes
+      author: Labatsevich Ihar
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/01.create_schema_mes.sql
+            encoding: utf8
+  - changeSet:
+      id: create_table_users
+      author: Labatsevich Ihar
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/02.create_users_table.sql
+            encoding: utf8
+  - changeSet:
+      id: create_table_chats
+      author: Labatsevich Ihar
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/03.create_chats_table.sql
+            encoding: utf8
+  - changeSet:
+      id: create_table_profiles
+      author: Labatsevich Ihar
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/04.create_profiles_table.sql
+            encoding: utf8
+  - changeSet:
+      id: create_table_requests_friendship
+      author: Labatsevich Ihar
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/05.create_requests_friendship_table.sql
+            encoding: utf8
+  - changeSet:
+      id: create_table_chats_profiles
+      author: Labatsevich Ihar
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/06.create_chats_profiles_table.sql
+            encoding: utf8
+  - changeSet:
+      id: create_table_groups
+      author: Labatsevich Ihar
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/07.create_groups_table.sql
+            encoding: utf8
+  - changeSet:
+      id: create_table_groups_participants
+      author: Labatsevich Ihar
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/08.create_groups_participants_table.sql
+            encoding: utf8
+  - changeSet:
+      id: create_table_messages
+      author: Labatsevich Ihar
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/09.create_messages_table.sql
+            encoding: utf8
+  - changeSet:
+      id: create_table_posts
+      author: Labatsevich Ihar
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/10.create_posts_table.sql
+            encoding: utf8
+  - changeSet:
+      id: create_table_comments
+      author: Labatsevich Ihar
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/11.create_comments_table.sql
+            encoding: utf8
+  - changeSet:
+      id: profiles-index
+      author: Labatsevich Ihar
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/12.create_profiles_index.sql
+            encoding: utf8
+  - changeSet:
+      id: requests_friendship-indexes
+      author: Labatsevich Ihar
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/13.create_requests_friendship_indexes.sql
+            encoding: utf8
+  - changeSet:
+      id: chats_profiles-indexes
+      author: Labatsevich Ihar
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/14.create_chats_profiles_indexes.sql
+            encoding: utf8
+  - changeSet:
+      id: groups-index
+      author: Labatsevich Ihar
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/15.create_groups_index.sql
+            encoding: utf8
+  - changeSet:
+      id: groups_participants-indexes
+      author: Labatsevich Ihar
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/16.create_groups_participants_indexes.sql
+            encoding: utf8
+  - changeSet:
+      id: messages-indexes
+      author: Labatsevich Ihar
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/17.create_messages_indexes.sql
+            encoding: utf8
+  - changeSet:
+      id: posts-indexes
+      author: Labatsevich Ihar
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/18.create_posts_indexes.sql
+            encoding: utf8
+  - changeSet:
+      id: comments-indexes
+      author: Labatsevich Ihar
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/19.create_comments_indexes.sql
+            encoding: utf8
+  - changeSet:
+      id: add_data_to_users_table
+      author: Labatsevich Ihar
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/20.add_data_to_users_table.sql
+            encoding: utf8
+  - changeSet:
+      id: add_data_to_profiles_table
+      author: Labatsevich Ihar
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/21.add_data_to_profiles_table.sql
+            encoding: utf8
+  - changeSet:
+      id: add_data_to_groups_table
+      author: Labatsevich Ihar
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/22.add_data_to_groups_table.sql
+            encoding: utf8
+  - changeSet:
+      id: add_data_to_groups_participants_table
+      author: Labatsevich Ihar
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/23.add_data_to_groups_participants_table.sql
+            encoding: utf8
+  - changeSet:
+      id: add_data_to_request_friendship_table
+      author: Labatsevich Ihar
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/24.add_data_to_request_friendship_table.sql
+            encoding: utf8
+  - changeSet:
+      id: add_data_to_chats_table
+      author: Labatsevich Ihar
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/25.add_data_to_chats_table.sql
+            encoding: utf8
+  - changeSet:
+      id: add_data_to_chats_profiles_table
+      author: Labatsevich Ihar
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/26.add_data_to_chats_profiles_table.sql
+            encoding: utf8
+  - changeSet:
+      id: add_data_to_messages_table
+      author: Labatsevich Ihar
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/27.add_data_to_messages_table.sql
+            encoding: utf8
+  - changeSet:
+      id: add_data_to_posts_table
+      author: Labatsevich Ihar
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/28.add_data_to_posts_table.sql
+            encoding: utf8
+  - changeSet:
+      id: add_data_to_comments_table
+      author: Labatsevich Ihar
+      changes:
+        - sqlFile:
+            path: db/changelog/sql/29.add_data_to_comments_table.sql
+            encoding: utf8
