@@ -15,6 +15,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import java.security.Principal;
+
 @Data
 @Entity
 @Table(schema = "mes", name = "users")
