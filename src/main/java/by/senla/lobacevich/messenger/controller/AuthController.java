@@ -9,6 +9,7 @@ import by.senla.lobacevich.messenger.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,8 +33,8 @@ public class AuthController {
     private final JWTTokenProvider jwtTokenProvider;
 
     @PostMapping("/signup")
-    public UserDtoResponse registerUser(@Valid @RequestBody UserDtoRequest request) throws InvalidDataException, EntityNotFoundException {
-        return service.createEntity(request);
+    public ResponseEntity<UserDtoResponse> registerUser(@Valid @RequestBody UserDtoRequest request) throws InvalidDataException, EntityNotFoundException {
+        return new ResponseEntity<>(service.createEntity(request), HttpStatus.CREATED);
     }
 
     @PostMapping("/login")

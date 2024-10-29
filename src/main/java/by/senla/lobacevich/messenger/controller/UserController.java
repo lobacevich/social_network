@@ -8,11 +8,10 @@ import by.senla.lobacevich.messenger.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,16 +39,13 @@ public class UserController {
         return service.findById(id);
     }
 
-    @PostMapping
-    public ResponseEntity<UserDtoResponse> createEntity(@Valid @RequestBody UserDtoRequest dtoRequest) throws InvalidDataException, EntityNotFoundException {
-        return new ResponseEntity<>(service.createEntity(dtoRequest), HttpStatus.CREATED);
-    }
-
+    @PreAuthorize("hasRole('ADMIN') or #dtoRequest.id == @userServiceImpl.getUserByUsername(principal.username).id")
     @PutMapping("/{id}")
     public UserDtoResponse updateEntity(@Valid @RequestBody UserDtoRequest dtoRequest, @PathVariable("id") Long id) throws EntityNotFoundException, InvalidDataException {
         return service.updateEntity(dtoRequest, id);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @userServiceImpl.findById(#id).username == principal.username")
     @DeleteMapping("/{id}")
     public HttpStatus deleteEntity(@PathVariable("id") Long id)  {
         service.deleteEntity(id);

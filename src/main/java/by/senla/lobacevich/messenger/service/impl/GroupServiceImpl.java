@@ -3,6 +3,7 @@ package by.senla.lobacevich.messenger.service.impl;
 import by.senla.lobacevich.messenger.dto.request.GroupDtoRequest;
 import by.senla.lobacevich.messenger.dto.response.DetailedGroupDtoResponse;
 import by.senla.lobacevich.messenger.entity.Group;
+import by.senla.lobacevich.messenger.entity.Profile;
 import by.senla.lobacevich.messenger.exception.EntityNotFoundException;
 import by.senla.lobacevich.messenger.exception.InvalidDataException;
 import by.senla.lobacevich.messenger.mapper.GroupMapper;
@@ -12,6 +13,7 @@ import by.senla.lobacevich.messenger.service.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 
 @Service
@@ -40,6 +42,22 @@ public class GroupServiceImpl extends AbstractService<GroupDtoRequest, DetailedG
         group.setName(request.name() != null ? request.name() : group.getName());
         group.setOwner(request.ownerId() != null ? profileService.findEntityById(request.ownerId()) :
                 group.getOwner());
+        return mapper.entityToDto(repository.save(group));
+    }
+
+    @Override
+    public DetailedGroupDtoResponse joinGroup(Long id, Principal principal) throws EntityNotFoundException {
+        Group group = findEntityById(id);
+        Profile profile = profileService.getProfileByPrincipal(principal);
+        group.getParticipants().add(profile);
+        return mapper.entityToDto(repository.save(group));
+    }
+
+    @Override
+    public DetailedGroupDtoResponse leaveGroup(Long id, Principal principal) throws EntityNotFoundException {
+        Group group = findEntityById(id);
+        Profile profile = profileService.getProfileByPrincipal(principal);
+        group.getParticipants().remove(profile);
         return mapper.entityToDto(repository.save(group));
     }
 }

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -48,13 +49,24 @@ public class ChatController {
 
     @PutMapping("/{id}")
     public DetailedChatDtoResponse updateEntity(@Valid @RequestBody ChatDtoRequest dtoRequest,
-                               @PathVariable("id") @Min(1) Long id) throws EntityNotFoundException, InvalidDataException {
+                                                @PathVariable("id") @Min(1) Long id) throws EntityNotFoundException, InvalidDataException {
         return service.updateEntity(dtoRequest, id);
     }
 
     @DeleteMapping("/{id}")
-    public HttpStatus deleteEntity(@PathVariable("id") Long id)  {
+    public HttpStatus deleteEntity(@PathVariable("id") Long id) {
         service.deleteEntity(id);
         return HttpStatus.NO_CONTENT;
+    }
+
+    @PostMapping("{id}/members")
+    public DetailedChatDtoResponse joinChat(@PathVariable("id") Long id, Principal principal) throws EntityNotFoundException {
+        return service.joinChat(id, principal);
+
+    }
+
+    @DeleteMapping("{id}/members")
+    public DetailedChatDtoResponse leaveChat(@PathVariable("id") Long id, Principal principal) throws EntityNotFoundException {
+        return service.leaveChat(id, principal);
     }
 }

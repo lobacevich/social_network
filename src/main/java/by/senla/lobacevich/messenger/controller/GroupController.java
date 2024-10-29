@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -54,5 +55,16 @@ public class GroupController {
     public HttpStatus deleteEntity(@PathVariable("id") Long id) {
         service.deleteEntity(id);
         return HttpStatus.NO_CONTENT;
+    }
+
+    @PostMapping("{id}/members")
+    public DetailedGroupDtoResponse joinGroup(@PathVariable("id") Long id, Principal principal) throws EntityNotFoundException {
+        return service.joinGroup(id, principal);
+
+    }
+
+    @DeleteMapping("{id}/members")
+    public DetailedGroupDtoResponse leaveGroup(@PathVariable("id") Long id, Principal principal) throws EntityNotFoundException {
+        return service.leaveGroup(id, principal);
     }
 }
