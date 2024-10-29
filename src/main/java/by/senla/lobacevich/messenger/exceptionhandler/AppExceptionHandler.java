@@ -1,28 +1,44 @@
 package by.senla.lobacevich.messenger.exceptionhandler;
 
+import by.senla.lobacevich.messenger.dto.response.ErrorDto;
+import by.senla.lobacevich.messenger.exception.InvalidDataException;
+import by.senla.lobacevich.messenger.exception.EntityNotFoundException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestControllerAdvice
 public class AppExceptionHandler extends ResponseEntityExceptionHandler {
 
-//    @ExceptionHandler(ObjectNotFoundException.class)
-//    public ResponseEntity<String> getObjectNotFoundException(ObjectNotFoundException e) {
-//        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorDto> handleEntityNotFoundException(EntityNotFoundException e) {
+        return new ResponseEntity<>(new ErrorDto(e.getMessage(), e.getClass().getSimpleName()), HttpStatus.NOT_FOUND);
+    }
 
-//    @ExceptionHandler(MethodArgumentNotValidException.class)
-//    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-//        Map<String, String> errors = new HashMap<>();
-//        ex.getBindingResult().getFieldErrors().forEach(error ->
-//                errors.put(error.getField(), error.getDefaultMessage()));
-//        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-//    }
+    @ExceptionHandler(InvalidDataException.class)
+    public ResponseEntity<ErrorDto> handleDataBaseException(InvalidDataException e) {
+        return new ResponseEntity<>(new ErrorDto(e.getMessage(), e.getClass().getSimpleName()), HttpStatus.BAD_REQUEST);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(error ->
+                errors.put(error.getField(), error.getDefaultMessage()));
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> getException(Exception e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ErrorDto> handleException(Exception e) {
+        return new ResponseEntity<>(new ErrorDto(e.getMessage(), e.getClass().getSimpleName()), HttpStatus.BAD_REQUEST);
     }
 }

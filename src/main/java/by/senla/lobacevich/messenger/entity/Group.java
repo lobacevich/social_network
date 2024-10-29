@@ -22,7 +22,7 @@ import java.util.Set;
 @Data
 @Entity
 @Table(schema = "mes", name = "groups")
-public class Group {
+public class Group implements AppEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,7 +51,7 @@ public class Group {
     )
     private Set<Profile> participants = new HashSet<>();
 
-    @OneToMany(mappedBy = "group")
+    @OneToMany(mappedBy = "group", orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<Post> posts;

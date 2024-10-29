@@ -21,7 +21,7 @@ import java.util.Set;
 @Data
 @Entity
 @Table(schema = "mes", name = "chats")
-public class Chat {
+public class Chat implements AppEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,12 +40,11 @@ public class Chat {
             schema = "mes",
             name = "chats_profiles",
             joinColumns = @JoinColumn(name = "chat_id"),
-            inverseJoinColumns = @JoinColumn(name = "participant_id")
-    )
+            inverseJoinColumns = @JoinColumn(name = "participant_id"))
     private Set<Profile> participants;
 
+    @OneToMany(mappedBy = "chat", orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @OneToMany(mappedBy = "chat", orphanRemoval = true)
     private List<Message> messages;
 }

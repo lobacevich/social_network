@@ -11,7 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -20,10 +19,8 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(schema = "mes", name = "requests_friendship",
-        uniqueConstraints = @UniqueConstraint(columnNames =
-        {"sender_id", "recipient_id"}))
-public class RequestFriendship {
+@Table(schema = "mes", name = "requests_friendship")
+public class RequestFriendship implements AppEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

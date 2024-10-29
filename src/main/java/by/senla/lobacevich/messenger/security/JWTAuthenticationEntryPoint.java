@@ -1,6 +1,6 @@
 package by.senla.lobacevich.messenger.security;
 
-import by.senla.lobacevich.messenger.dto.response.TextResponse;
+import by.senla.lobacevich.messenger.dto.response.ErrorDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,6 +24,6 @@ public class JWTAuthenticationEntryPoint implements AuthenticationEntryPoint {
                          AuthenticationException authException) throws IOException {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        mapper.writeValue(response.getWriter(), new TextResponse(authException.getMessage()));
+        mapper.writeValue(response.getWriter(), new ErrorDto(authException.getMessage(), authException.getClass().getSimpleName()));
     }
 }

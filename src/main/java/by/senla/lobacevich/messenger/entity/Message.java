@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Data
 @Entity
 @Table(schema = "mes", name = "messages")
-public class Message {
+public class Message implements AppEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

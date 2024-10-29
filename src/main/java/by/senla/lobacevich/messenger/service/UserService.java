@@ -5,9 +5,7 @@ import by.senla.lobacevich.messenger.dto.response.UserDtoResponse;
 import by.senla.lobacevich.messenger.entity.User;
 import by.senla.lobacevich.messenger.exception.EntityNotFoundException;
 
-public interface UserService {
-
-    UserDtoResponse createEntity(UserDtoRequest request);
+public interface UserService extends GenericService<UserDtoRequest, UserDtoResponse, User> {
 
     User getUserByUsername(String username) throws EntityNotFoundException;
 }

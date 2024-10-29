@@ -15,12 +15,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import java.security.Principal;
-
 @Data
 @Entity
 @Table(schema = "mes", name = "users")
-public class User {
+public class User implements AppEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

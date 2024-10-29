@@ -19,7 +19,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(schema = "mes", name = "posts")
-public class Post {
+public class Post implements AppEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
