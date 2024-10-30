@@ -25,6 +25,11 @@ import java.util.List;
 @AllArgsConstructor
 public class UserController {
 
+    private static final String IS_OWNER = """
+            @userRepository.findById(#id).isEmpty() or
+            @userRepository.findById(#id).get().username == authentication.name
+            """;
+
     private final UserService service;
 
     @GetMapping
@@ -39,13 +44,13 @@ public class UserController {
         return service.findById(id);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or #dtoRequest.id == @userServiceImpl.getUserByUsername(principal.username).id")
+    @PreAuthorize("hasRole('ADMIN') or " + IS_OWNER)
     @PutMapping("/{id}")
     public UserDtoResponse updateEntity(@Valid @RequestBody UserDtoRequest dtoRequest, @PathVariable("id") Long id) throws EntityNotFoundException, InvalidDataException {
         return service.updateEntity(dtoRequest, id);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or @userServiceImpl.findById(#id).username == principal.username")
+    @PreAuthorize("hasRole('ADMIN') or " + IS_OWNER)
     @DeleteMapping("/{id}")
     public HttpStatus deleteEntity(@PathVariable("id") Long id)  {
         service.deleteEntity(id);

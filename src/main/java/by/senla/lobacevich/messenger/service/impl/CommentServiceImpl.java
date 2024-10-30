@@ -4,6 +4,9 @@ package by.senla.lobacevich.messenger.service.impl;
 import by.senla.lobacevich.messenger.dto.request.CommentDtoRequest;
 import by.senla.lobacevich.messenger.dto.response.CommentDtoResponse;
 import by.senla.lobacevich.messenger.entity.Comment;
+import by.senla.lobacevich.messenger.entity.Group;
+import by.senla.lobacevich.messenger.entity.Profile;
+import by.senla.lobacevich.messenger.exception.AuthorizationException;
 import by.senla.lobacevich.messenger.exception.EntityNotFoundException;
 import by.senla.lobacevich.messenger.exception.InvalidDataException;
 import by.senla.lobacevich.messenger.mapper.CommentMapper;
@@ -32,12 +35,21 @@ public class CommentServiceImpl extends AbstractService<CommentDtoRequest, Comme
     }
 
     @Override
-    public CommentDtoResponse createEntity(CommentDtoRequest request) throws EntityNotFoundException {
+    public CommentDtoResponse createEntity(CommentDtoRequest request) throws EntityNotFoundException, AuthorizationException {
+        validateIsInGroup(request);
         Comment comment = mapper.dtoToEntity(request);
         comment.setAuthor(profileService.findEntityById(request.authorId()));
         comment.setPost(postService.findEntityById(request.postId()));
         comment.setCreatedDate(LocalDateTime.now());
         return mapper.entityToDto(repository.save(comment));
+    }
+
+    private void validateIsInGroup(CommentDtoRequest request) throws EntityNotFoundException, AuthorizationException {
+        Profile profile = profileService.findEntityById(request.authorId());
+        Group group = postService.findEntityById(request.postId()).getGroup();
+        if (!group.getParticipants().contains(profile)) {
+            throw new AuthorizationException("Profile id " + profile.getId() + " is not in group id " + group.getId());
+        }
     }
 
     @Override

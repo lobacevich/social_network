@@ -2,6 +2,7 @@ package by.senla.lobacevich.messenger.controller;
 
 import by.senla.lobacevich.messenger.dto.request.UserDtoRequest;
 import by.senla.lobacevich.messenger.dto.response.UserDtoResponse;
+import by.senla.lobacevich.messenger.exception.AuthorizationException;
 import by.senla.lobacevich.messenger.exception.EntityNotFoundException;
 import by.senla.lobacevich.messenger.exception.InvalidDataException;
 import by.senla.lobacevich.messenger.security.JWTTokenProvider;
@@ -33,7 +34,7 @@ public class AuthController {
     private final JWTTokenProvider jwtTokenProvider;
 
     @PostMapping("/signup")
-    public ResponseEntity<UserDtoResponse> registerUser(@Valid @RequestBody UserDtoRequest request) throws InvalidDataException, EntityNotFoundException {
+    public ResponseEntity<UserDtoResponse> registerUser(@Valid @RequestBody UserDtoRequest request) throws InvalidDataException, EntityNotFoundException, AuthorizationException {
         return new ResponseEntity<>(service.createEntity(request), HttpStatus.CREATED);
     }
 

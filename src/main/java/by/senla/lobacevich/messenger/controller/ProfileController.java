@@ -1,7 +1,6 @@
 package by.senla.lobacevich.messenger.controller;
 
 import by.senla.lobacevich.messenger.dto.request.ProfileDtoRequest;
-import by.senla.lobacevich.messenger.dto.response.ChatDtoResponse;
 import by.senla.lobacevich.messenger.dto.response.CommentDtoResponse;
 import by.senla.lobacevich.messenger.dto.response.DetailedChatDtoResponse;
 import by.senla.lobacevich.messenger.dto.response.DetailedGroupDtoResponse;
@@ -9,14 +8,15 @@ import by.senla.lobacevich.messenger.dto.response.DetailedPostDtoResponse;
 import by.senla.lobacevich.messenger.dto.response.DetailedProfileDtoResponse;
 import by.senla.lobacevich.messenger.dto.response.MessageDtoResponse;
 import by.senla.lobacevich.messenger.dto.response.RequestFriendshipDtoResponse;
-import by.senla.lobacevich.messenger.entity.Profile;
-import by.senla.lobacevich.messenger.exception.InvalidDataException;
+import by.senla.lobacevich.messenger.exception.AuthorizationException;
 import by.senla.lobacevich.messenger.exception.EntityNotFoundException;
+import by.senla.lobacevich.messenger.exception.InvalidDataException;
 import by.senla.lobacevich.messenger.service.ProfileService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,6 +35,11 @@ import java.util.List;
 @AllArgsConstructor
 public class ProfileController {
 
+    private static final String IS_OWNER = """
+            @profileRepository.findById(#id).isEmpty() or
+            @profileRepository.findById(#id).get().user.username == authentication.name
+            """;
+
     private final ProfileService service;
 
     @GetMapping
@@ -50,15 +55,17 @@ public class ProfileController {
     }
 
     @PostMapping
-    public ResponseEntity<DetailedProfileDtoResponse> createEntity(@Valid @RequestBody ProfileDtoRequest dtoRequest) throws EntityNotFoundException, InvalidDataException {
+    public ResponseEntity<DetailedProfileDtoResponse> createEntity(@Valid @RequestBody ProfileDtoRequest dtoRequest) throws EntityNotFoundException, InvalidDataException, AuthorizationException {
         return new ResponseEntity<>(service.createEntity(dtoRequest), HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or " + IS_OWNER)
     @PutMapping("/{id}")
     public DetailedProfileDtoResponse updateEntity(@Valid @RequestBody ProfileDtoRequest dtoRequest, @PathVariable("id") Long id) throws EntityNotFoundException, InvalidDataException {
         return service.updateEntity(dtoRequest, id);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or " + IS_OWNER)
     @DeleteMapping("/{id}")
     public HttpStatus deleteEntity(@PathVariable("id") Long id)  {
         service.deleteEntity(id);
@@ -70,7 +77,7 @@ public class ProfileController {
         return service.getProfileGroups(principal);
     }
 
-    @GetMapping("/groups-owned")
+    @GetMapping("/owned-groups")
     public List<DetailedGroupDtoResponse> getProfileGroupsOwned(Principal principal) throws EntityNotFoundException {
         return service.getProfileGroupsOwned(principal);
     }

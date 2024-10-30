@@ -1,6 +1,7 @@
 package by.senla.lobacevich.messenger.service.impl;
 
 import by.senla.lobacevich.messenger.entity.AppEntity;
+import by.senla.lobacevich.messenger.exception.AuthorizationException;
 import by.senla.lobacevich.messenger.exception.InvalidDataException;
 import by.senla.lobacevich.messenger.exception.EntityNotFoundException;
 import by.senla.lobacevich.messenger.mapper.GenericMapper;
@@ -24,7 +25,7 @@ public class AbstractService<Q, P, E extends AppEntity, R extends JpaRepository<
     }
 
     @Override
-    public P createEntity(Q request) throws InvalidDataException, EntityNotFoundException {
+    public P createEntity(Q request) throws InvalidDataException, EntityNotFoundException, AuthorizationException {
         return mapper.entityToDto(repository.save(mapper.dtoToEntity(request)));
     }
 

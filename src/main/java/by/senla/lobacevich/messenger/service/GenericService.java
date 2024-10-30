@@ -1,5 +1,6 @@
 package by.senla.lobacevich.messenger.service;
 
+import by.senla.lobacevich.messenger.exception.AuthorizationException;
 import by.senla.lobacevich.messenger.exception.InvalidDataException;
 import by.senla.lobacevich.messenger.exception.EntityNotFoundException;
 
@@ -7,7 +8,7 @@ import java.util.List;
 
 public interface GenericService<Q, P, E> {
 
-    P createEntity(Q q) throws InvalidDataException, EntityNotFoundException;
+    P createEntity(Q q) throws InvalidDataException, EntityNotFoundException, AuthorizationException;
 
     P updateEntity(Q requestDto, Long id) throws EntityNotFoundException, InvalidDataException;
 
