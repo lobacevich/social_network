@@ -16,6 +16,7 @@ import by.senla.lobacevich.messenger.service.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 
 @Service
@@ -34,18 +35,18 @@ public class MessageServiceImpl extends AbstractService<MessageDtoRequest, Messa
     }
 
     @Override
-    public MessageDtoResponse createEntity(MessageDtoRequest request) throws EntityNotFoundException, AuthorizationException {
-        validateIsInChat(request);
+    public MessageDtoResponse createEntity(MessageDtoRequest request, Principal principal) throws EntityNotFoundException, AuthorizationException {
+        Profile profile = profileService.getProfileByPrincipal(principal);
+        validateIsInChat(request, profile);
         Message message = mapper.dtoToEntity(request);
-        message.setAuthor(profileService.findEntityById(request.authorId()));
+        message.setAuthor(profile);
         message.setChat(chatService.findEntityById(request.chatId()));
         message.setCreatedDate(LocalDateTime.now());
         return mapper.entityToDto(repository.save(message));
     }
 
-    private void validateIsInChat(MessageDtoRequest request) throws EntityNotFoundException, AuthorizationException {
+    private void validateIsInChat(MessageDtoRequest request, Profile profile) throws EntityNotFoundException, AuthorizationException {
         Chat chat = chatService.findEntityById(request.chatId());
-        Profile profile = profileService.findEntityById(request.authorId());
         if (!chat.getParticipants().contains(profile)) {
             throw new AuthorizationException("Profile id " + profile.getId() + " is not in chat id " + chat.getId());
         }

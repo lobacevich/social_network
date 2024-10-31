@@ -53,8 +53,9 @@ public class CommentController {
 
     @Operation(summary = "Create comment")
     @PostMapping
-    public ResponseEntity<CommentDtoResponse> createEntity(@Valid @RequestBody CommentDtoRequest dtoRequest) throws EntityNotFoundException, InvalidDataException, AuthorizationException {
-        return new ResponseEntity<>(service.createEntity(dtoRequest), HttpStatus.CREATED);
+    public ResponseEntity<CommentDtoResponse> createEntity(@Valid @RequestBody CommentDtoRequest dtoRequest,
+                                                           Principal principal) throws EntityNotFoundException, InvalidDataException, AuthorizationException {
+        return new ResponseEntity<>(service.createEntity(dtoRequest, principal), HttpStatus.CREATED);
     }
 
     @Operation(summary = "Update comment")

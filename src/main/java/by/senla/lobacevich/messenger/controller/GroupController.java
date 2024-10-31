@@ -56,8 +56,9 @@ public class GroupController {
 
     @Operation(summary = "Create group")
     @PostMapping
-    public ResponseEntity<DetailedGroupDtoResponse> createEntity(@Valid @RequestBody GroupDtoRequest dtoRequest) throws EntityNotFoundException, InvalidDataException, AuthorizationException {
-        return new ResponseEntity<>(service.createEntity(dtoRequest), HttpStatus.CREATED);
+    public ResponseEntity<DetailedGroupDtoResponse> createEntity(@Valid @RequestBody GroupDtoRequest dtoRequest,
+                                                                 Principal principal) throws EntityNotFoundException, InvalidDataException, AuthorizationException {
+        return new ResponseEntity<>(service.createEntity(dtoRequest, principal), HttpStatus.CREATED);
     }
 
     @Operation(summary = "Update group")

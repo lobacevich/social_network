@@ -57,8 +57,9 @@ public class RequestFriendshipController {
 
     @Operation(summary = "Create friendship request")
     @PostMapping
-    public ResponseEntity<RequestFriendshipDtoResponse> createEntity(@Valid @RequestBody RequestFriendshipDtoRequest dtoRequest) throws EntityNotFoundException, InvalidDataException, AuthorizationException {
-        return new ResponseEntity<>(service.createEntity(dtoRequest), HttpStatus.CREATED);
+    public ResponseEntity<RequestFriendshipDtoResponse> createEntity(@Valid @RequestBody RequestFriendshipDtoRequest dtoRequest,
+                                                                     Principal principal) throws EntityNotFoundException, InvalidDataException, AuthorizationException {
+        return new ResponseEntity<>(service.createEntity(dtoRequest, principal), HttpStatus.CREATED);
     }
 
     @Operation(summary = "Update friendship request")

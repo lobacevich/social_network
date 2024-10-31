@@ -33,9 +33,9 @@ public class GroupServiceImpl extends AbstractService<GroupDtoRequest, DetailedG
     }
 
     @Override
-    public DetailedGroupDtoResponse createEntity(GroupDtoRequest request) throws EntityNotFoundException {
+    public DetailedGroupDtoResponse createEntity(GroupDtoRequest request, Principal principal) throws EntityNotFoundException {
         Group group = mapper.dtoToEntity(request);
-        group.setOwner(profileService.findEntityById(request.ownerId()));
+        group.setOwner(profileService.getProfileByPrincipal(principal));
         group.setCreatedDate(LocalDateTime.now());
         return mapper.entityToDto(repository.save(group));
     }
@@ -44,8 +44,6 @@ public class GroupServiceImpl extends AbstractService<GroupDtoRequest, DetailedG
     public DetailedGroupDtoResponse updateEntity(GroupDtoRequest request, Long id) throws EntityNotFoundException, InvalidDataException {
         Group group = findEntityById(id);
         group.setName(request.name() != null ? request.name() : group.getName());
-        group.setOwner(request.ownerId() != null ? profileService.findEntityById(request.ownerId()) :
-                group.getOwner());
         return mapper.entityToDto(repository.save(group));
     }
 

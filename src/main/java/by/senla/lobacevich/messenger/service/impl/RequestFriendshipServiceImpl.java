@@ -2,6 +2,7 @@ package by.senla.lobacevich.messenger.service.impl;
 
 import by.senla.lobacevich.messenger.dto.request.RequestFriendshipDtoRequest;
 import by.senla.lobacevich.messenger.dto.response.RequestFriendshipDtoResponse;
+import by.senla.lobacevich.messenger.entity.Profile;
 import by.senla.lobacevich.messenger.entity.RequestFriendship;
 import by.senla.lobacevich.messenger.entity.enums.RequestStatus;
 import by.senla.lobacevich.messenger.exception.EntityNotFoundException;
@@ -13,6 +14,7 @@ import by.senla.lobacevich.messenger.service.RequestFriendshipService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 
 @Service
@@ -29,14 +31,15 @@ public class RequestFriendshipServiceImpl extends AbstractService<RequestFriends
     }
 
     @Override
-    public RequestFriendshipDtoResponse createEntity(RequestFriendshipDtoRequest request) throws InvalidDataException, EntityNotFoundException {
-            validateRequestDto(request);
-            RequestFriendship requestFriendship = new RequestFriendship();
-            requestFriendship.setSender(profileService.findEntityById(request.senderId()));
-            requestFriendship.setRecipient(profileService.findEntityById(request.recipientId()));
-            requestFriendship.setStatus(RequestStatus.SENT);
-            requestFriendship.setUpdateDate(LocalDateTime.now());
-            return mapper.entityToDto(repository.save(requestFriendship));
+    public RequestFriendshipDtoResponse createEntity(RequestFriendshipDtoRequest request, Principal principal) throws InvalidDataException, EntityNotFoundException {
+        Profile profile = profileService.getProfileByPrincipal(principal);
+        validateRequestDto(request, profile);
+        RequestFriendship requestFriendship = new RequestFriendship();
+        requestFriendship.setSender(profile);
+        requestFriendship.setRecipient(profileService.findEntityById(request.recipientId()));
+        requestFriendship.setStatus(RequestStatus.SENT);
+        requestFriendship.setUpdateDate(LocalDateTime.now());
+        return mapper.entityToDto(repository.save(requestFriendship));
     }
 
     @Override
@@ -46,12 +49,12 @@ public class RequestFriendshipServiceImpl extends AbstractService<RequestFriends
         return mapper.entityToDto(repository.save(requestFriendship));
     }
 
-    private void validateRequestDto(RequestFriendshipDtoRequest request) throws InvalidDataException {
-        if (request.senderId().equals(request.recipientId())) {
+    private void validateRequestDto(RequestFriendshipDtoRequest request, Profile profile) throws InvalidDataException {
+        if (profile.getId().equals(request.recipientId())) {
             throw new InvalidDataException("Request sent to himself");
         }
-        if (repository.findBySenderIdAndRecipientId(request.senderId(), request.recipientId()).isPresent()
-                || repository.findBySenderIdAndRecipientId(request.recipientId(), request.senderId()).isPresent()) {
+        if (repository.findBySenderIdAndRecipientId(profile.getId(), request.recipientId()).isPresent()
+                || repository.findBySenderIdAndRecipientId(request.recipientId(), profile.getId()).isPresent()) {
             throw new InvalidDataException("Duplicate friendship request");
         }
     }

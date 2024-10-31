@@ -43,7 +43,7 @@ public class UserController {
         return service.findAll(pageSize, pageNumber);
     }
 
-    @Operation(summary = "Create user")
+    @Operation(summary = "Get user by id")
     @GetMapping("/{id}")
     public UserDtoResponse findById(@PathVariable("id") Long id) throws EntityNotFoundException {
         return service.findById(id);

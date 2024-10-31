@@ -10,6 +10,8 @@ import java.util.List;
 
 public interface ChatService extends GenericService<ChatDtoRequest, DetailedChatDtoResponse, Chat> {
 
+    DetailedChatDtoResponse createEntity(ChatDtoRequest request, Principal principal) throws EntityNotFoundException;
+
     DetailedChatDtoResponse joinChat(Long id, Principal principal) throws EntityNotFoundException;
 
     DetailedChatDtoResponse leaveChat(Long id, Principal principal) throws EntityNotFoundException;

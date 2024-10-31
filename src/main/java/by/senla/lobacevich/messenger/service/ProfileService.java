@@ -10,11 +10,14 @@ import by.senla.lobacevich.messenger.dto.response.MessageDtoResponse;
 import by.senla.lobacevich.messenger.dto.response.RequestFriendshipDtoResponse;
 import by.senla.lobacevich.messenger.entity.Profile;
 import by.senla.lobacevich.messenger.exception.EntityNotFoundException;
+import by.senla.lobacevich.messenger.exception.InvalidDataException;
 
 import java.security.Principal;
 import java.util.List;
 
 public interface ProfileService extends GenericService<ProfileDtoRequest, DetailedProfileDtoResponse, Profile> {
+
+    DetailedProfileDtoResponse createEntity(ProfileDtoRequest request) throws InvalidDataException, EntityNotFoundException;
 
     List<DetailedProfileDtoResponse> searchProfiles(String query, int pageSize, int pageNumber);
 

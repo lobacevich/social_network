@@ -17,6 +17,7 @@ import by.senla.lobacevich.messenger.service.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 
 @Service
@@ -35,17 +36,17 @@ public class CommentServiceImpl extends AbstractService<CommentDtoRequest, Comme
     }
 
     @Override
-    public CommentDtoResponse createEntity(CommentDtoRequest request) throws EntityNotFoundException, AuthorizationException {
-        validateIsInGroup(request);
+    public CommentDtoResponse createEntity(CommentDtoRequest request, Principal principal) throws EntityNotFoundException, AuthorizationException {
+        Profile profile = profileService.getProfileByPrincipal(principal);
+        validateIsInGroup(request, profile);
         Comment comment = mapper.dtoToEntity(request);
-        comment.setAuthor(profileService.findEntityById(request.authorId()));
+        comment.setAuthor(profile);
         comment.setPost(postService.findEntityById(request.postId()));
         comment.setCreatedDate(LocalDateTime.now());
         return mapper.entityToDto(repository.save(comment));
     }
 
-    private void validateIsInGroup(CommentDtoRequest request) throws EntityNotFoundException, AuthorizationException {
-        Profile profile = profileService.findEntityById(request.authorId());
+    private void validateIsInGroup(CommentDtoRequest request, Profile profile) throws EntityNotFoundException, AuthorizationException {
         Group group = postService.findEntityById(request.postId()).getGroup();
         if (!group.getParticipants().contains(profile)) {
             throw new AuthorizationException("Profile id " + profile.getId() + " is not in group id " + group.getId());

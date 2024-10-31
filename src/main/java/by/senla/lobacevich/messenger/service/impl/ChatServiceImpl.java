@@ -34,10 +34,10 @@ public class ChatServiceImpl extends AbstractService<ChatDtoRequest, DetailedCha
     }
 
     @Override
-    public DetailedChatDtoResponse createEntity(ChatDtoRequest request) throws EntityNotFoundException {
+    public DetailedChatDtoResponse createEntity(ChatDtoRequest request, Principal principal) throws EntityNotFoundException {
         Chat chat = mapper.dtoToEntity(request);
         chat.setCreatedDate(LocalDateTime.now());
-        chat.setOwner(profileService.findEntityById(request.ownerId()));
+        chat.setOwner(profileService.getProfileByPrincipal(principal));
         return mapper.entityToDto(repository.save(chat));
     }
 

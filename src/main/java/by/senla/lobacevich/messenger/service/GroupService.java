@@ -10,6 +10,8 @@ import java.util.List;
 
 public interface GroupService extends GenericService<GroupDtoRequest, DetailedGroupDtoResponse, Group> {
 
+    DetailedGroupDtoResponse createEntity(GroupDtoRequest request, Principal principal) throws EntityNotFoundException;
+
     DetailedGroupDtoResponse joinGroup(Long id, Principal principal) throws EntityNotFoundException;
 
     DetailedGroupDtoResponse leaveGroup(Long id, Principal principal) throws EntityNotFoundException;

@@ -55,8 +55,9 @@ public class PostController {
 
     @Operation(summary = "Create post")
     @PostMapping
-    public ResponseEntity<DetailedPostDtoResponse> createEntity(@Valid @RequestBody PostDtoRequest dtoRequest) throws EntityNotFoundException, InvalidDataException, AuthorizationException {
-        return new ResponseEntity<>(service.createEntity(dtoRequest), HttpStatus.CREATED);
+    public ResponseEntity<DetailedPostDtoResponse> createEntity(@Valid @RequestBody PostDtoRequest dtoRequest,
+                                                                Principal principal) throws EntityNotFoundException, InvalidDataException, AuthorizationException {
+        return new ResponseEntity<>(service.createEntity(dtoRequest, principal), HttpStatus.CREATED);
     }
 
     @Operation(summary = "Update post")

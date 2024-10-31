@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,11 +23,6 @@ public class AbstractService<Q, P, E extends AppEntity, R extends JpaRepository<
     public AbstractService(R repository, M mapper) {
         this.repository = repository;
         this.mapper = mapper;
-    }
-
-    @Override
-    public P createEntity(Q request) throws InvalidDataException, EntityNotFoundException, AuthorizationException {
-        return mapper.entityToDto(repository.save(mapper.dtoToEntity(request)));
     }
 
     @Override

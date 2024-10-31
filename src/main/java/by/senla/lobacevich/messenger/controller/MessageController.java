@@ -55,8 +55,9 @@ public class MessageController {
 
     @Operation(summary = "Create message")
     @PostMapping
-    public ResponseEntity<MessageDtoResponse> createEntity(@Valid @RequestBody MessageDtoRequest dtoRequest) throws EntityNotFoundException, InvalidDataException, AuthorizationException {
-        return new ResponseEntity<>(service.createEntity(dtoRequest), HttpStatus.CREATED);
+    public ResponseEntity<MessageDtoResponse> createEntity(@Valid @RequestBody MessageDtoRequest dtoRequest,
+                                                           Principal principal) throws EntityNotFoundException, InvalidDataException, AuthorizationException {
+        return new ResponseEntity<>(service.createEntity(dtoRequest, principal), HttpStatus.CREATED);
     }
 
     @Operation(summary = "Update message")

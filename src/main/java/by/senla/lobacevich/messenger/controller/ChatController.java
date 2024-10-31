@@ -56,8 +56,9 @@ public class ChatController {
 
     @Operation(summary = "Create chat")
     @PostMapping
-    public ResponseEntity<DetailedChatDtoResponse> createEntity(@Valid @RequestBody ChatDtoRequest dtoRequest) throws EntityNotFoundException, InvalidDataException, AuthorizationException {
-        return new ResponseEntity<>(service.createEntity(dtoRequest), HttpStatus.CREATED);
+    public ResponseEntity<DetailedChatDtoResponse> createEntity(@Valid @RequestBody ChatDtoRequest dtoRequest,
+                                                                Principal principal) throws EntityNotFoundException, InvalidDataException, AuthorizationException {
+        return new ResponseEntity<>(service.createEntity(dtoRequest, principal), HttpStatus.CREATED);
     }
 
     @Operation(summary = "Update chat")
