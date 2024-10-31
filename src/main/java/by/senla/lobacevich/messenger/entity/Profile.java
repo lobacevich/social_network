@@ -51,6 +51,9 @@ public class Profile implements AppEntity {
     @OneToMany(mappedBy = "owner", orphanRemoval = true)
     private Set<Group> ownedGroups = new HashSet<>();
 
+    @OneToMany(mappedBy = "owner", orphanRemoval = true)
+    private Set<Chat> ownedChats = new HashSet<>();
+
     @OneToMany(mappedBy = "sender", orphanRemoval = true)
     private Set<RequestFriendship> sendFriendRequests = new HashSet<>();
 

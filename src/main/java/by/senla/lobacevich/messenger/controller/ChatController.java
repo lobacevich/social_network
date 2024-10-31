@@ -30,6 +30,12 @@ import java.util.List;
 @AllArgsConstructor
 public class ChatController {
 
+    private static final String IS_OWNER = """
+            @chatRepository.findById(#id).isEmpty() or
+            @profileServiceImpl.getProfileByPrincipal(#principal).id ==
+            @chatRepository.findById(#id).get().owner.id
+            """;
+
     private final ChatService service;
 
     @GetMapping
@@ -49,18 +55,26 @@ public class ChatController {
         return new ResponseEntity<>(service.createEntity(dtoRequest), HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or " + IS_OWNER)
     @PutMapping("/{id}")
     public DetailedChatDtoResponse updateEntity(@Valid @RequestBody ChatDtoRequest dtoRequest,
-                                                @PathVariable("id") @Min(1) Long id) throws EntityNotFoundException, InvalidDataException {
+                                                @PathVariable("id") @Min(1) Long id, Principal principal) throws EntityNotFoundException, InvalidDataException {
         return service.updateEntity(dtoRequest, id);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or " + IS_OWNER)
     @DeleteMapping("/{id}")
-    public HttpStatus deleteEntity(@PathVariable("id") Long id) {
+    public HttpStatus deleteEntity(@PathVariable("id") Long id, Principal principal) {
         service.deleteEntity(id);
         return HttpStatus.NO_CONTENT;
+    }
+
+    @GetMapping("/search")
+    public List<DetailedChatDtoResponse> searchChats(
+            @RequestParam("name") String name,
+            @RequestParam(value = "page_size", defaultValue = "20", required = false) int pageSize,
+            @RequestParam(value = "page_number", defaultValue = "0", required = false) int pageNumber) {
+        return service.searchChats(name, pageSize, pageNumber);
     }
 
     @PostMapping("{id}/members")

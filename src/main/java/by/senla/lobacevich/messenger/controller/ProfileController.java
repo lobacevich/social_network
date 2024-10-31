@@ -72,6 +72,14 @@ public class ProfileController {
         return HttpStatus.NO_CONTENT;
     }
 
+    @GetMapping("/search")
+    public List<DetailedProfileDtoResponse> searchProfiles(
+            @RequestParam("query") String query,
+            @RequestParam(value = "page_size", defaultValue = "20", required = false) int pageSize,
+            @RequestParam(value = "page_number", defaultValue = "0", required = false) int pageNumber) {
+        return service.searchProfiles(query, pageSize, pageNumber);
+    }
+
     @GetMapping("/groups")
     public List<DetailedGroupDtoResponse> getProfileGroups(Principal principal) throws EntityNotFoundException {
         return service.getProfileGroups(principal);
@@ -85,6 +93,11 @@ public class ProfileController {
     @GetMapping("/chats")
     public List<DetailedChatDtoResponse> getProfileChats(Principal principal) throws EntityNotFoundException {
         return service.getProfileChats(principal);
+    }
+
+    @GetMapping("/owned-chats")
+    public List<DetailedChatDtoResponse> getProfileChatsOwned(Principal principal) throws EntityNotFoundException {
+        return service.getProfileChatsOwned(principal);
     }
 
     @GetMapping("/posts")
@@ -109,11 +122,11 @@ public class ProfileController {
 
     @GetMapping("/received-requests")
     public List<RequestFriendshipDtoResponse> getProfileReceivedFriendRequests(Principal principal) throws EntityNotFoundException {
-        return service.getProfileReceivedFriendRequests(principal);
+        return service.getProfileReceivedNotApprovedFriendRequests(principal);
     }
 
     @GetMapping("/send-requests")
     public List<RequestFriendshipDtoResponse> getProfileSendFriendRequests(Principal principal) throws EntityNotFoundException {
-        return service.getProfileReceivedFriendRequests(principal);
+        return service.getProfileReceivedNotApprovedFriendRequests(principal);
     }
 }

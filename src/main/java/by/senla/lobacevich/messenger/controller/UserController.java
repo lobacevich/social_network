@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,5 +56,17 @@ public class UserController {
     public HttpStatus deleteEntity(@PathVariable("id") Long id)  {
         service.deleteEntity(id);
         return HttpStatus.NO_CONTENT;
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/{id}/admin")
+    public UserDtoResponse makeAdmin(@PathVariable("id") Long id) throws EntityNotFoundException {
+        return service.makeAdmin(id);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/{id}/user")
+    public UserDtoResponse makeUser(@PathVariable("id") Long id) throws EntityNotFoundException {
+        return service.makeUser(id);
     }
 }

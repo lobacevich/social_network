@@ -12,10 +12,14 @@ import by.senla.lobacevich.messenger.repository.ChatRepository;
 import by.senla.lobacevich.messenger.service.ChatService;
 import by.senla.lobacevich.messenger.service.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ChatServiceImpl extends AbstractService<ChatDtoRequest, DetailedChatDtoResponse, Chat,
@@ -30,9 +34,10 @@ public class ChatServiceImpl extends AbstractService<ChatDtoRequest, DetailedCha
     }
 
     @Override
-    public DetailedChatDtoResponse createEntity(ChatDtoRequest requestDto) {
-        Chat chat = mapper.dtoToEntity(requestDto);
+    public DetailedChatDtoResponse createEntity(ChatDtoRequest request) throws EntityNotFoundException {
+        Chat chat = mapper.dtoToEntity(request);
         chat.setCreatedDate(LocalDateTime.now());
+        chat.setOwner(profileService.findEntityById(request.ownerId()));
         return mapper.entityToDto(repository.save(chat));
     }
 
@@ -57,5 +62,13 @@ public class ChatServiceImpl extends AbstractService<ChatDtoRequest, DetailedCha
         Profile profile = profileService.getProfileByPrincipal(principal);
         chat.getParticipants().remove(profile);
         return mapper.entityToDto(repository.save(chat));
+    }
+
+    @Override
+    public List<DetailedChatDtoResponse> searchChats(String name, int pageSize, int pageNumber) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        return repository.searchChats(name, pageable).stream()
+                .map(mapper::entityToDto)
+                .collect(Collectors.toList());
     }
 }

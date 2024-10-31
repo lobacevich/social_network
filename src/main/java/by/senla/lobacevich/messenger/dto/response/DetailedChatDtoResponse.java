@@ -7,6 +7,7 @@ import java.util.Set;
 public record DetailedChatDtoResponse(Long id,
                                       String name,
                                       LocalDateTime createdDate,
+                                      ProfileDtoResponse owner,
                                       Set<ProfileDtoResponse> participants,
                                       List<MessageDtoResponse> messages) {
 }

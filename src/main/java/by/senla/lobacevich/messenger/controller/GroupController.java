@@ -2,6 +2,7 @@ package by.senla.lobacevich.messenger.controller;
 
 import by.senla.lobacevich.messenger.dto.request.GroupDtoRequest;
 import by.senla.lobacevich.messenger.dto.response.DetailedGroupDtoResponse;
+import by.senla.lobacevich.messenger.dto.response.DetailedProfileDtoResponse;
 import by.senla.lobacevich.messenger.exception.AuthorizationException;
 import by.senla.lobacevich.messenger.exception.InvalidDataException;
 import by.senla.lobacevich.messenger.exception.EntityNotFoundException;
@@ -66,6 +67,14 @@ public class GroupController {
     public HttpStatus deleteEntity(@PathVariable("id") Long id, Principal principal) {
         service.deleteEntity(id);
         return HttpStatus.NO_CONTENT;
+    }
+
+    @GetMapping("/search")
+    public List<DetailedGroupDtoResponse> searchGroups(
+            @RequestParam("name") String name,
+            @RequestParam(value = "page_size", defaultValue = "20", required = false) int pageSize,
+            @RequestParam(value = "page_number", defaultValue = "0", required = false) int pageNumber) {
+        return service.searchGroups(name, pageSize, pageNumber);
     }
 
     @PostMapping("{id}/members")

@@ -25,6 +25,8 @@ import by.senla.lobacevich.messenger.service.ProfileService;
 import by.senla.lobacevich.messenger.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -83,6 +85,14 @@ public class ProfileServiceImpl extends AbstractService<ProfileDtoRequest, Detai
     }
 
     @Override
+    public List<DetailedProfileDtoResponse> searchProfiles(String query, int pageSize, int pageNumber) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        return repository.searchProfiles(query, pageable).stream()
+                .map(mapper::entityToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public Profile getProfileByPrincipal(Principal principal) throws EntityNotFoundException {
         return repository.findByUsername(principal.getName()).orElseThrow(() ->
                 new EntityNotFoundException("Profile not found by username " + principal.getName()));
@@ -108,6 +118,14 @@ public class ProfileServiceImpl extends AbstractService<ProfileDtoRequest, Detai
     public List<DetailedChatDtoResponse> getProfileChats(Principal principal) throws EntityNotFoundException {
         Profile profile = getProfileByPrincipal(principal);
         return profile.getChats().stream()
+                .map(chatMapper::entityToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<DetailedChatDtoResponse> getProfileChatsOwned(Principal principal) throws EntityNotFoundException {
+        Profile profile = getProfileByPrincipal(principal);
+        return profile.getOwnedChats().stream()
                 .map(chatMapper::entityToDto)
                 .collect(Collectors.toList());
     }
@@ -155,7 +173,7 @@ public class ProfileServiceImpl extends AbstractService<ProfileDtoRequest, Detai
     }
 
     @Override
-    public List<RequestFriendshipDtoResponse> getProfileReceivedFriendRequests(Principal principal) throws EntityNotFoundException {
+    public List<RequestFriendshipDtoResponse> getProfileReceivedNotApprovedFriendRequests(Principal principal) throws EntityNotFoundException {
         Profile profile = getProfileByPrincipal(principal);
         return profile.getReceiveFriendRequests().stream()
                 .filter(request -> request.getStatus() == RequestStatus.SENT)
@@ -164,7 +182,7 @@ public class ProfileServiceImpl extends AbstractService<ProfileDtoRequest, Detai
     }
 
     @Override
-    public List<RequestFriendshipDtoResponse> getProfileSendFriendRequests(Principal principal) throws EntityNotFoundException {
+    public List<RequestFriendshipDtoResponse> getProfileSendNotApprovedFriendRequests(Principal principal) throws EntityNotFoundException {
         Profile profile = getProfileByPrincipal(principal);
         return profile.getSendFriendRequests().stream()
                 .filter(request -> request.getStatus() == RequestStatus.SENT)

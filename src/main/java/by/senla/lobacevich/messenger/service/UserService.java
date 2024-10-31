@@ -8,4 +8,8 @@ import by.senla.lobacevich.messenger.exception.EntityNotFoundException;
 public interface UserService extends GenericService<UserDtoRequest, UserDtoResponse, User> {
 
     User getUserByUsername(String username) throws EntityNotFoundException;
+
+    UserDtoResponse makeAdmin(Long id) throws EntityNotFoundException;
+
+    UserDtoResponse makeUser(Long id) throws EntityNotFoundException;
 }

@@ -59,4 +59,18 @@ public class UserServiceImpl extends AbstractService<UserDtoRequest, UserDtoResp
             throw new InvalidDataException("Duplicate username or email");
         }
     }
+
+    @Override
+    public UserDtoResponse makeAdmin(Long id) throws EntityNotFoundException {
+        User user = findEntityById(id);
+        user.setRole(Role.ROLE_ADMIN);
+        return mapper.entityToDto(repository.save(user));
+    }
+
+    @Override
+    public UserDtoResponse makeUser(Long id) throws EntityNotFoundException {
+        User user = findEntityById(id);
+        user.setRole(Role.ROLE_USER);
+        return mapper.entityToDto(repository.save(user));
+    }
 }

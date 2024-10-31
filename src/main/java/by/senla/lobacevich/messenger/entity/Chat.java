@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -32,6 +33,12 @@ public class Chat implements AppEntity {
 
     @Column(nullable = false)
     private LocalDateTime createdDate;
+
+    @ManyToOne
+    @JoinColumn(name = "owner_id", nullable = false)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Profile owner;
 
     @ManyToMany
     @EqualsAndHashCode.Exclude

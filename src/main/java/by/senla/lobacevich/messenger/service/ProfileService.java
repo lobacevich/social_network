@@ -16,6 +16,8 @@ import java.util.List;
 
 public interface ProfileService extends GenericService<ProfileDtoRequest, DetailedProfileDtoResponse, Profile> {
 
+    List<DetailedProfileDtoResponse> searchProfiles(String query, int pageSize, int pageNumber);
+
     Profile getProfileByPrincipal(Principal principal) throws EntityNotFoundException;
 
     List<DetailedGroupDtoResponse> getProfileGroups(Principal principal) throws EntityNotFoundException;
@@ -23,6 +25,8 @@ public interface ProfileService extends GenericService<ProfileDtoRequest, Detail
     List<DetailedGroupDtoResponse> getProfileGroupsOwned(Principal principal) throws EntityNotFoundException;
 
     List<DetailedChatDtoResponse> getProfileChats(Principal principal) throws EntityNotFoundException;
+
+    List<DetailedChatDtoResponse> getProfileChatsOwned(Principal principal) throws EntityNotFoundException;
 
     List<DetailedPostDtoResponse> getProfilePosts(Principal principal) throws EntityNotFoundException;
 
@@ -32,7 +36,7 @@ public interface ProfileService extends GenericService<ProfileDtoRequest, Detail
 
     List<DetailedProfileDtoResponse> getProfileFriends(Principal principal) throws EntityNotFoundException;
 
-    List<RequestFriendshipDtoResponse> getProfileReceivedFriendRequests(Principal principal) throws EntityNotFoundException;
+    List<RequestFriendshipDtoResponse> getProfileReceivedNotApprovedFriendRequests(Principal principal) throws EntityNotFoundException;
 
-    List<RequestFriendshipDtoResponse> getProfileSendFriendRequests(Principal principal) throws EntityNotFoundException;
+    List<RequestFriendshipDtoResponse> getProfileSendNotApprovedFriendRequests(Principal principal) throws EntityNotFoundException;
 }

@@ -22,4 +22,12 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
 
     @Query("SELECT p FROM Profile p JOIN p.user u WHERE u.username = :username")
     Optional<Profile> findByUsername(@Param("username") String username);
+
+    @Query("""
+            SELECT p FROM Profile p WHERE
+            LOWER(p.user.username) LIKE LOWER(CONCAT('%', :query, '%')) OR
+            LOWER(p.firstname) LIKE LOWER(CONCAT('%', :query, '%')) OR
+            LOWER(p.lastname) LIKE LOWER(CONCAT('%', :query, '%'))
+            """)
+    Page<Profile> searchProfiles(@Param("query") String query, Pageable pageable);
 }
