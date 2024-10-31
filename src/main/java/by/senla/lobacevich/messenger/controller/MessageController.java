@@ -6,6 +6,7 @@ import by.senla.lobacevich.messenger.exception.AuthorizationException;
 import by.senla.lobacevich.messenger.exception.InvalidDataException;
 import by.senla.lobacevich.messenger.exception.EntityNotFoundException;
 import by.senla.lobacevich.messenger.service.MessageService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -37,6 +38,8 @@ public class MessageController {
 
     private final MessageService service;
 
+    @Operation(summary = "Get all messages",
+            description = "Pagination available using 'page_size' and 'page_number'")
     @GetMapping
     public List<MessageDtoResponse> findAll(
             @RequestParam(value = "page_size", defaultValue = "20", required = false) int pageSize,
@@ -44,16 +47,19 @@ public class MessageController {
         return service.findAll(pageSize, pageNumber);
     }
 
+    @Operation(summary = "Get message by id")
     @GetMapping("/{id}")
     public MessageDtoResponse findById(@PathVariable("id") Long id) throws EntityNotFoundException {
         return service.findById(id);
     }
 
+    @Operation(summary = "Create message")
     @PostMapping
     public ResponseEntity<MessageDtoResponse> createEntity(@Valid @RequestBody MessageDtoRequest dtoRequest) throws EntityNotFoundException, InvalidDataException, AuthorizationException {
         return new ResponseEntity<>(service.createEntity(dtoRequest), HttpStatus.CREATED);
     }
 
+    @Operation(summary = "Update message")
     @PreAuthorize("hasRole('ADMIN') or " + IS_OWNER)
     @PutMapping("/{id}")
     public MessageDtoResponse updateEntity(@Valid @RequestBody MessageDtoRequest dtoRequest, @PathVariable("id") Long id,
@@ -61,6 +67,7 @@ public class MessageController {
         return service.updateEntity(dtoRequest, id);
     }
 
+    @Operation(summary = "Delete message")
     @PreAuthorize("hasRole('ADMIN') or " + IS_OWNER)
     @DeleteMapping("/{id}")
     public HttpStatus deleteEntity(@PathVariable("id") Long id, Principal principal) {

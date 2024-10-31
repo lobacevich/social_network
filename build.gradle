@@ -36,6 +36,9 @@ dependencies {
     implementation 'org.mapstruct:mapstruct:1.5.5.Final'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 
+    implementation 'io.swagger.core.v3:swagger-annotations:2.2.25'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+
     testImplementation "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
     testImplementation 'com.h2database:h2:2.3.232'
     testImplementation platform('org.junit:junit-bom:5.10.0')
@@ -48,4 +51,14 @@ test {
 
 tasks.withType(JavaCompile).configureEach {
     options.compilerArgs << '-parameters'
+}
+
+tasks.register('startPostgresContainer', Exec) {
+    group = 'docker'
+    commandLine 'docker-compose', 'up', "-d"
+}
+
+tasks.register('stopPostgresContainer', Exec) {
+    group = 'docker'
+    commandLine 'docker-compose', 'down'
 }

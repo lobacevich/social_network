@@ -6,6 +6,7 @@ import by.senla.lobacevich.messenger.exception.AuthorizationException;
 import by.senla.lobacevich.messenger.exception.EntityNotFoundException;
 import by.senla.lobacevich.messenger.exception.InvalidDataException;
 import by.senla.lobacevich.messenger.service.CommentService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -37,27 +38,33 @@ public class CommentController {
 
     private final CommentService service;
 
+    @Operation(summary = "Get all comments",
+            description = "Pagination available using 'page_size' and 'page_number'")
     @GetMapping
     public List<CommentDtoResponse> findAll(@RequestParam(value = "page_size", defaultValue = "20", required = false) int pageSize, @RequestParam(value = "page_number", defaultValue = "0", required = false) int pageNumber) {
         return service.findAll(pageSize, pageNumber);
     }
 
+    @Operation(summary = "Get comment by id")
     @GetMapping("/{id}")
     public CommentDtoResponse findById(@PathVariable("id") Long id) throws EntityNotFoundException {
         return service.findById(id);
     }
 
+    @Operation(summary = "Create comment")
     @PostMapping
     public ResponseEntity<CommentDtoResponse> createEntity(@Valid @RequestBody CommentDtoRequest dtoRequest) throws EntityNotFoundException, InvalidDataException, AuthorizationException {
         return new ResponseEntity<>(service.createEntity(dtoRequest), HttpStatus.CREATED);
     }
 
+    @Operation(summary = "Update comment")
     @PreAuthorize("hasRole('ADMIN') or " + IS_OWNER)
     @PutMapping("/{id}")
     public CommentDtoResponse updateEntity(@Valid @RequestBody CommentDtoRequest dtoRequest, @PathVariable("id") Long id, Principal principal) throws EntityNotFoundException, InvalidDataException {
         return service.updateEntity(dtoRequest, id);
     }
 
+    @Operation(summary = "Delete comment")
     @PreAuthorize("hasRole('ADMIN') or " + IS_OWNER)
     @DeleteMapping("/{id}")
     public HttpStatus deleteEntity(@PathVariable("id") Long id, Principal principal) {

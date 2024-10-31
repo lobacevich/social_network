@@ -6,6 +6,7 @@ import by.senla.lobacevich.messenger.exception.AuthorizationException;
 import by.senla.lobacevich.messenger.exception.EntityNotFoundException;
 import by.senla.lobacevich.messenger.exception.InvalidDataException;
 import by.senla.lobacevich.messenger.service.RequestFriendshipService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -39,6 +40,8 @@ public class RequestFriendshipController {
 
     private final RequestFriendshipService service;
 
+    @Operation(summary = "Get all friendship requests",
+            description = "Pagination available using 'page_size' and 'page_number'")
     @GetMapping
     public List<RequestFriendshipDtoResponse> findAll(
             @RequestParam(value = "page_size", defaultValue = "20", required = false) int pageSize,
@@ -46,16 +49,19 @@ public class RequestFriendshipController {
         return service.findAll(pageSize, pageNumber);
     }
 
+    @Operation(summary = "Get friendship request by id")
     @GetMapping("/{id}")
     public RequestFriendshipDtoResponse findById(@PathVariable("id") Long id) throws EntityNotFoundException {
         return service.findById(id);
     }
 
+    @Operation(summary = "Create friendship request")
     @PostMapping
     public ResponseEntity<RequestFriendshipDtoResponse> createEntity(@Valid @RequestBody RequestFriendshipDtoRequest dtoRequest) throws EntityNotFoundException, InvalidDataException, AuthorizationException {
         return new ResponseEntity<>(service.createEntity(dtoRequest), HttpStatus.CREATED);
     }
 
+    @Operation(summary = "Update friendship request")
     @PreAuthorize("hasRole('ADMIN') or " + IS_OWNER)
     @PutMapping("/{id}")
     public RequestFriendshipDtoResponse updateEntity(@Valid @RequestBody RequestFriendshipDtoRequest dtoRequest,
@@ -63,6 +69,7 @@ public class RequestFriendshipController {
         return service.updateEntity(dtoRequest, id);
     }
 
+    @Operation(summary = "Delete friendship request")
     @PreAuthorize("hasRole('ADMIN') or " + IS_OWNER)
     @DeleteMapping("/{id}")
     public HttpStatus deleteEntity(@PathVariable("id") Long id, Principal principal) {

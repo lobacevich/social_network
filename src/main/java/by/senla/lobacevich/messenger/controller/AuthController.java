@@ -7,6 +7,7 @@ import by.senla.lobacevich.messenger.exception.EntityNotFoundException;
 import by.senla.lobacevich.messenger.exception.InvalidDataException;
 import by.senla.lobacevich.messenger.security.JWTTokenProvider;
 import by.senla.lobacevich.messenger.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -33,11 +34,13 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JWTTokenProvider jwtTokenProvider;
 
+    @Operation(summary = "Register a new user")
     @PostMapping("/signup")
     public ResponseEntity<UserDtoResponse> registerUser(@Valid @RequestBody UserDtoRequest request) throws InvalidDataException, EntityNotFoundException, AuthorizationException {
         return new ResponseEntity<>(service.createEntity(request), HttpStatus.CREATED);
     }
 
+    @Operation(summary = "User log in")
     @PostMapping("/login")
     public ResponseEntity<String> authenticateUser(@Valid @RequestBody UserDtoRequest request) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(

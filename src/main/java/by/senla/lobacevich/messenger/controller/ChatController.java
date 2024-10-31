@@ -6,6 +6,7 @@ import by.senla.lobacevich.messenger.exception.AuthorizationException;
 import by.senla.lobacevich.messenger.exception.EntityNotFoundException;
 import by.senla.lobacevich.messenger.exception.InvalidDataException;
 import by.senla.lobacevich.messenger.service.ChatService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
@@ -38,6 +39,8 @@ public class ChatController {
 
     private final ChatService service;
 
+    @Operation(summary = "Get all chats",
+    description = "Pagination available using 'page_size' and 'page_number'")
     @GetMapping
     public List<DetailedChatDtoResponse> findAll(
             @RequestParam(value = "page_size", defaultValue = "20", required = false) int pageSize,
@@ -45,16 +48,19 @@ public class ChatController {
         return service.findAll(pageSize, pageNumber);
     }
 
+    @Operation(summary = "Get chat by id")
     @GetMapping("/{id}")
     public DetailedChatDtoResponse findById(@PathVariable("id") Long id) throws EntityNotFoundException {
         return service.findById(id);
     }
 
+    @Operation(summary = "Create chat")
     @PostMapping
     public ResponseEntity<DetailedChatDtoResponse> createEntity(@Valid @RequestBody ChatDtoRequest dtoRequest) throws EntityNotFoundException, InvalidDataException, AuthorizationException {
         return new ResponseEntity<>(service.createEntity(dtoRequest), HttpStatus.CREATED);
     }
 
+    @Operation(summary = "Update chat")
     @PreAuthorize("hasRole('ADMIN') or " + IS_OWNER)
     @PutMapping("/{id}")
     public DetailedChatDtoResponse updateEntity(@Valid @RequestBody ChatDtoRequest dtoRequest,
@@ -62,6 +68,7 @@ public class ChatController {
         return service.updateEntity(dtoRequest, id);
     }
 
+    @Operation(summary = "Delete chat")
     @PreAuthorize("hasRole('ADMIN') or " + IS_OWNER)
     @DeleteMapping("/{id}")
     public HttpStatus deleteEntity(@PathVariable("id") Long id, Principal principal) {
@@ -69,6 +76,8 @@ public class ChatController {
         return HttpStatus.NO_CONTENT;
     }
 
+    @Operation(summary = "Search chat by name",
+    description = "Case independent search chat by part of chat name, pagination available using 'page_size' and 'page_number'")
     @GetMapping("/search")
     public List<DetailedChatDtoResponse> searchChats(
             @RequestParam("name") String name,
@@ -77,12 +86,14 @@ public class ChatController {
         return service.searchChats(name, pageSize, pageNumber);
     }
 
+    @Operation(summary = "Add profile to chat by id")
     @PostMapping("{id}/members")
     public DetailedChatDtoResponse joinChat(@PathVariable("id") Long id, Principal principal) throws EntityNotFoundException {
         return service.joinChat(id, principal);
 
     }
 
+    @Operation(summary = "Remove profile from chat by id")
     @DeleteMapping("{id}/members")
     public DetailedChatDtoResponse leaveChat(@PathVariable("id") Long id, Principal principal) throws EntityNotFoundException {
         return service.leaveChat(id, principal);

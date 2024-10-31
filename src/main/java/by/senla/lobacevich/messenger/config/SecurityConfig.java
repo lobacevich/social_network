@@ -25,7 +25,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @AllArgsConstructor
 public class SecurityConfig {
 
-    private static final String PERMIT_ALL = "/auth/**";
+    private static final String[] PERMIT_ALL = {"/auth/**", "/swagger-ui/**", "/v3/api-docs/**"};
 
     private final JWTAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final UserDetailsService userService;

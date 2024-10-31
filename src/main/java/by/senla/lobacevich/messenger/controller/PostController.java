@@ -6,6 +6,7 @@ import by.senla.lobacevich.messenger.exception.AuthorizationException;
 import by.senla.lobacevich.messenger.exception.InvalidDataException;
 import by.senla.lobacevich.messenger.exception.EntityNotFoundException;
 import by.senla.lobacevich.messenger.service.PostService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -37,6 +38,8 @@ public class PostController {
 
     private final PostService service;
 
+    @Operation(summary = "Get all posts",
+            description = "Pagination available using 'page_size' and 'page_number'")
     @GetMapping
     public List<DetailedPostDtoResponse> findAll(
             @RequestParam(value = "page_size", defaultValue = "20", required = false) int pageSize,
@@ -44,16 +47,19 @@ public class PostController {
         return service.findAll(pageSize, pageNumber);
     }
 
+    @Operation(summary = "Get post by id")
     @GetMapping("/{id}")
     public DetailedPostDtoResponse findById(@PathVariable("id") Long id) throws EntityNotFoundException {
         return service.findById(id);
     }
 
+    @Operation(summary = "Create post")
     @PostMapping
     public ResponseEntity<DetailedPostDtoResponse> createEntity(@Valid @RequestBody PostDtoRequest dtoRequest) throws EntityNotFoundException, InvalidDataException, AuthorizationException {
         return new ResponseEntity<>(service.createEntity(dtoRequest), HttpStatus.CREATED);
     }
 
+    @Operation(summary = "Update post")
     @PreAuthorize("hasRole('ADMIN') or " + IS_OWNER)
     @PutMapping("/{id}")
     public DetailedPostDtoResponse updateEntity(@Valid @RequestBody PostDtoRequest dtoRequest, @PathVariable("id") Long id,
@@ -61,6 +67,7 @@ public class PostController {
         return service.updateEntity(dtoRequest, id);
     }
 
+    @Operation(summary = "Delete post")
     @PreAuthorize("hasRole('ADMIN') or " + IS_OWNER)
     @DeleteMapping("/{id}")
     public HttpStatus deleteEntity(@PathVariable("id") Long id, Principal principal) {

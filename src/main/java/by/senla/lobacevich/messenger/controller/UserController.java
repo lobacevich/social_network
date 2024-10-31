@@ -5,6 +5,7 @@ import by.senla.lobacevich.messenger.dto.response.UserDtoResponse;
 import by.senla.lobacevich.messenger.exception.EntityNotFoundException;
 import by.senla.lobacevich.messenger.exception.InvalidDataException;
 import by.senla.lobacevich.messenger.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,8 @@ public class UserController {
 
     private final UserService service;
 
+    @Operation(summary = "Get all users",
+            description = "Pagination available using 'page_size' and 'page_number'")
     @GetMapping
     public List<UserDtoResponse> findAll(
             @RequestParam(value = "page_size", defaultValue = "20", required = false) int pageSize,
@@ -40,17 +43,20 @@ public class UserController {
         return service.findAll(pageSize, pageNumber);
     }
 
+    @Operation(summary = "Create user")
     @GetMapping("/{id}")
     public UserDtoResponse findById(@PathVariable("id") Long id) throws EntityNotFoundException {
         return service.findById(id);
     }
 
+    @Operation(summary = "Update user")
     @PreAuthorize("hasRole('ADMIN') or " + IS_OWNER)
     @PutMapping("/{id}")
     public UserDtoResponse updateEntity(@Valid @RequestBody UserDtoRequest dtoRequest, @PathVariable("id") Long id) throws EntityNotFoundException, InvalidDataException {
         return service.updateEntity(dtoRequest, id);
     }
 
+    @Operation(summary = "Delete user")
     @PreAuthorize("hasRole('ADMIN') or " + IS_OWNER)
     @DeleteMapping("/{id}")
     public HttpStatus deleteEntity(@PathVariable("id") Long id)  {
@@ -58,12 +64,14 @@ public class UserController {
         return HttpStatus.NO_CONTENT;
     }
 
+    @Operation(summary = "Make user's role ROLE_ADMIN")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{id}/admin")
     public UserDtoResponse makeAdmin(@PathVariable("id") Long id) throws EntityNotFoundException {
         return service.makeAdmin(id);
     }
 
+    @Operation(summary = "Make user's role ROLE_USER")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{id}/user")
     public UserDtoResponse makeUser(@PathVariable("id") Long id) throws EntityNotFoundException {

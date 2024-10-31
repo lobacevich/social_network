@@ -7,6 +7,7 @@ import by.senla.lobacevich.messenger.exception.AuthorizationException;
 import by.senla.lobacevich.messenger.exception.InvalidDataException;
 import by.senla.lobacevich.messenger.exception.EntityNotFoundException;
 import by.senla.lobacevich.messenger.service.GroupService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -38,6 +39,8 @@ public class GroupController {
 
     private final GroupService service;
 
+    @Operation(summary = "Get all groups",
+            description = "Pagination available using 'page_size' and 'page_number'")
     @GetMapping
     public List<DetailedGroupDtoResponse> findAll(
             @RequestParam(value = "page_size", defaultValue = "20", required = false) int pageSize,
@@ -45,16 +48,19 @@ public class GroupController {
         return service.findAll(pageSize, pageNumber);
     }
 
+    @Operation(summary = "Get group by id")
     @GetMapping("/{id}")
     public DetailedGroupDtoResponse findById(@PathVariable("id") Long id) throws EntityNotFoundException {
         return service.findById(id);
     }
 
+    @Operation(summary = "Create group")
     @PostMapping
     public ResponseEntity<DetailedGroupDtoResponse> createEntity(@Valid @RequestBody GroupDtoRequest dtoRequest) throws EntityNotFoundException, InvalidDataException, AuthorizationException {
         return new ResponseEntity<>(service.createEntity(dtoRequest), HttpStatus.CREATED);
     }
 
+    @Operation(summary = "Update group")
     @PreAuthorize("hasRole('ADMIN') or " + IS_OWNER)
     @PutMapping("/{id}")
     public DetailedGroupDtoResponse updateEntity(@Valid @RequestBody GroupDtoRequest dtoRequest, @PathVariable("id") Long id,
@@ -62,6 +68,7 @@ public class GroupController {
         return service.updateEntity(dtoRequest, id);
     }
 
+    @Operation(summary = "Delete group")
     @PreAuthorize("hasRole('ADMIN') or " + IS_OWNER)
     @DeleteMapping("/{id}")
     public HttpStatus deleteEntity(@PathVariable("id") Long id, Principal principal) {
@@ -69,6 +76,8 @@ public class GroupController {
         return HttpStatus.NO_CONTENT;
     }
 
+    @Operation(summary = "Search group by name",
+            description = "Case independent search group by part of group name, pagination available using 'page_size' and 'page_number'")
     @GetMapping("/search")
     public List<DetailedGroupDtoResponse> searchGroups(
             @RequestParam("name") String name,
@@ -77,12 +86,14 @@ public class GroupController {
         return service.searchGroups(name, pageSize, pageNumber);
     }
 
+    @Operation(summary = "Add profile to group by id")
     @PostMapping("{id}/members")
     public DetailedGroupDtoResponse joinGroup(@PathVariable("id") Long id, Principal principal) throws EntityNotFoundException {
         return service.joinGroup(id, principal);
 
     }
 
+    @Operation(summary = "Remove profile from group by id")
     @DeleteMapping("{id}/members")
     public DetailedGroupDtoResponse leaveGroup(@PathVariable("id") Long id, Principal principal) throws EntityNotFoundException {
         return service.leaveGroup(id, principal);
