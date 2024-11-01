@@ -2,9 +2,9 @@ package by.senla.lobacevich.messenger.controller;
 
 import by.senla.lobacevich.messenger.dto.request.MessageDtoRequest;
 import by.senla.lobacevich.messenger.dto.response.MessageDtoResponse;
-import by.senla.lobacevich.messenger.exception.AuthorizationException;
-import by.senla.lobacevich.messenger.exception.InvalidDataException;
+import by.senla.lobacevich.messenger.exception.AccessDeniedException;
 import by.senla.lobacevich.messenger.exception.EntityNotFoundException;
+import by.senla.lobacevich.messenger.exception.InvalidDataException;
 import by.senla.lobacevich.messenger.service.MessageService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -22,19 +22,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.security.Principal;
 import java.util.List;
 
 @RestController
 @RequestMapping("/messages")
 @AllArgsConstructor
 public class MessageController {
-
-    private static final String IS_OWNER = """
-            @messageRepository.findById(#id).isEmpty() or
-            @profileServiceImpl.getProfileByPrincipal(#principal).id ==
-            @messageRepository.findById(#id).get().author.id
-            """;
 
     private final MessageService service;
 
@@ -55,23 +48,21 @@ public class MessageController {
 
     @Operation(summary = "Create message")
     @PostMapping
-    public ResponseEntity<MessageDtoResponse> createEntity(@Valid @RequestBody MessageDtoRequest dtoRequest,
-                                                           Principal principal) throws EntityNotFoundException, InvalidDataException, AuthorizationException {
-        return new ResponseEntity<>(service.createEntity(dtoRequest, principal), HttpStatus.CREATED);
+    public ResponseEntity<MessageDtoResponse> createEntity(@Valid @RequestBody MessageDtoRequest dtoRequest) throws EntityNotFoundException, InvalidDataException, AccessDeniedException {
+        return new ResponseEntity<>(service.createEntity(dtoRequest), HttpStatus.CREATED);
     }
 
     @Operation(summary = "Update message")
-    @PreAuthorize("hasRole('ADMIN') or " + IS_OWNER)
+    @PreAuthorize("hasRole('ADMIN') or @messageServiceImpl.isOwnerOrEmpty(#id)")
     @PutMapping("/{id}")
-    public MessageDtoResponse updateEntity(@Valid @RequestBody MessageDtoRequest dtoRequest, @PathVariable("id") Long id,
-                                           Principal principal) throws EntityNotFoundException, InvalidDataException {
+    public MessageDtoResponse updateEntity(@Valid @RequestBody MessageDtoRequest dtoRequest, @PathVariable("id") Long id) throws EntityNotFoundException, InvalidDataException, AccessDeniedException {
         return service.updateEntity(dtoRequest, id);
     }
 
     @Operation(summary = "Delete message")
-    @PreAuthorize("hasRole('ADMIN') or " + IS_OWNER)
+    @PreAuthorize("hasRole('ADMIN') or @messageServiceImpl.isOwnerOrEmpty(#id)")
     @DeleteMapping("/{id}")
-    public HttpStatus deleteEntity(@PathVariable("id") Long id, Principal principal) {
+    public HttpStatus deleteEntity(@PathVariable("id") Long id) throws EntityNotFoundException {
         service.deleteEntity(id);
         return HttpStatus.NO_CONTENT;
     }

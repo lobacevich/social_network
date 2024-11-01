@@ -1,8 +1,8 @@
 package by.senla.lobacevich.messenger.controller;
 
 import by.senla.lobacevich.messenger.dto.request.UserDtoRequest;
-import by.senla.lobacevich.messenger.dto.response.UserDtoResponse;
-import by.senla.lobacevich.messenger.exception.AuthorizationException;
+import by.senla.lobacevich.messenger.dto.response.DetailedProfileDtoResponse;
+import by.senla.lobacevich.messenger.exception.AccessDeniedException;
 import by.senla.lobacevich.messenger.exception.EntityNotFoundException;
 import by.senla.lobacevich.messenger.exception.InvalidDataException;
 import by.senla.lobacevich.messenger.security.JWTTokenProvider;
@@ -36,13 +36,13 @@ public class AuthController {
 
     @Operation(summary = "Register a new user")
     @PostMapping("/signup")
-    public ResponseEntity<UserDtoResponse> registerUser(@Valid @RequestBody UserDtoRequest request) throws InvalidDataException, EntityNotFoundException, AuthorizationException {
-        return new ResponseEntity<>(service.createEntity(request), HttpStatus.CREATED);
+    public ResponseEntity<DetailedProfileDtoResponse> registerUser(@Valid @RequestBody UserDtoRequest request) throws InvalidDataException, EntityNotFoundException, AccessDeniedException {
+        return new ResponseEntity<>(service.createUserAndProfile(request), HttpStatus.CREATED);
     }
 
     @Operation(summary = "User log in")
     @PostMapping("/login")
-    public ResponseEntity<String> authenticateUser(@Valid @RequestBody UserDtoRequest request) {
+    public ResponseEntity<String> authenticateUser(@RequestBody UserDtoRequest request) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 request.username(),
                 request.password()

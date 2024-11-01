@@ -1,7 +1,7 @@
 package by.senla.lobacevich.messenger.exceptionhandler;
 
 import by.senla.lobacevich.messenger.dto.response.ErrorDto;
-import by.senla.lobacevich.messenger.exception.AuthorizationException;
+import by.senla.lobacevich.messenger.exception.AccessDeniedException;
 import by.senla.lobacevich.messenger.exception.InvalidDataException;
 import by.senla.lobacevich.messenger.exception.EntityNotFoundException;
 import lombok.extern.log4j.Log4j2;
@@ -44,8 +44,8 @@ public class AppExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(AuthorizationException.class)
-    public ResponseEntity<ErrorDto> handleAuthorizationException(AuthorizationException e) {
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorDto> handleAuthorizationException(AccessDeniedException e) {
         log.error("{}/{}", e.getMessage(), e.getClass().getSimpleName());
         return new ResponseEntity<>(new ErrorDto(e.getMessage(), e.getClass().getSimpleName()), HttpStatus.FORBIDDEN);
     }

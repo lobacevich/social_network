@@ -1,7 +1,7 @@
 package by.senla.lobacevich.messenger.service.impl;
 
 import by.senla.lobacevich.messenger.entity.AppEntity;
-import by.senla.lobacevich.messenger.exception.AuthorizationException;
+import by.senla.lobacevich.messenger.exception.AccessDeniedException;
 import by.senla.lobacevich.messenger.exception.InvalidDataException;
 import by.senla.lobacevich.messenger.exception.EntityNotFoundException;
 import by.senla.lobacevich.messenger.mapper.GenericMapper;
@@ -10,7 +10,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,7 +25,12 @@ public class AbstractService<Q, P, E extends AppEntity, R extends JpaRepository<
     }
 
     @Override
-    public P updateEntity(Q request, Long id) throws EntityNotFoundException, InvalidDataException {
+    public P createEntity(Q requestDto) throws EntityNotFoundException, AccessDeniedException, InvalidDataException {
+        return mapper.entityToDto(repository.save(mapper.dtoToEntity(requestDto)));
+    }
+
+    @Override
+    public P updateEntity(Q request, Long id) throws EntityNotFoundException, InvalidDataException, AccessDeniedException {
         E entity = mapper.dtoToEntity(request);
         entity.setId(id);
         return mapper.entityToDto(repository.save(entity));
@@ -48,7 +52,7 @@ public class AbstractService<Q, P, E extends AppEntity, R extends JpaRepository<
     }
 
     @Override
-    public void deleteEntity(Long id) {
+    public void deleteEntity(Long id) throws EntityNotFoundException {
         repository.deleteById(id);
     }
 

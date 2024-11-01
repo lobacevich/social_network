@@ -5,16 +5,14 @@ import by.senla.lobacevich.messenger.dto.response.DetailedChatDtoResponse;
 import by.senla.lobacevich.messenger.entity.Chat;
 import by.senla.lobacevich.messenger.exception.EntityNotFoundException;
 
-import java.security.Principal;
 import java.util.List;
 
 public interface ChatService extends GenericService<ChatDtoRequest, DetailedChatDtoResponse, Chat> {
 
-    DetailedChatDtoResponse createEntity(ChatDtoRequest request, Principal principal) throws EntityNotFoundException;
+    DetailedChatDtoResponse joinChat(Long id) throws EntityNotFoundException;
 
-    DetailedChatDtoResponse joinChat(Long id, Principal principal) throws EntityNotFoundException;
+    DetailedChatDtoResponse leaveChat(Long id) throws EntityNotFoundException;
 
-    DetailedChatDtoResponse leaveChat(Long id, Principal principal) throws EntityNotFoundException;
-
-    List<DetailedChatDtoResponse> searchChats(String name, int pageSize, int pageNumber);
+    List<DetailedChatDtoResponse> searchChats(int pageSize, int pageNumber, String name,
+                                              Long ownerId, Long memberId);
 }

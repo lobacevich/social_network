@@ -16,6 +16,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -48,7 +49,7 @@ public class Chat implements AppEntity {
             name = "chats_profiles",
             joinColumns = @JoinColumn(name = "chat_id"),
             inverseJoinColumns = @JoinColumn(name = "participant_id"))
-    private Set<Profile> participants;
+    private Set<Profile> participants = new HashSet<>();
 
     @OneToMany(mappedBy = "chat", orphanRemoval = true)
     @EqualsAndHashCode.Exclude

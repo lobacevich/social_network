@@ -2,6 +2,7 @@ package by.senla.lobacevich.messenger.controller;
 
 import by.senla.lobacevich.messenger.dto.request.UserDtoRequest;
 import by.senla.lobacevich.messenger.dto.response.UserDtoResponse;
+import by.senla.lobacevich.messenger.exception.AccessDeniedException;
 import by.senla.lobacevich.messenger.exception.EntityNotFoundException;
 import by.senla.lobacevich.messenger.exception.InvalidDataException;
 import by.senla.lobacevich.messenger.service.UserService;
@@ -27,11 +28,6 @@ import java.util.List;
 @AllArgsConstructor
 public class UserController {
 
-    private static final String IS_OWNER = """
-            @userRepository.findById(#id).isEmpty() or
-            @userRepository.findById(#id).get().username == authentication.name
-            """;
-
     private final UserService service;
 
     @Operation(summary = "Get all users",
@@ -50,16 +46,16 @@ public class UserController {
     }
 
     @Operation(summary = "Update user")
-    @PreAuthorize("hasRole('ADMIN') or " + IS_OWNER)
+    @PreAuthorize("hasRole('ADMIN') or @userServiceImpl.isOwnerOrEmpty(#id)")
     @PutMapping("/{id}")
-    public UserDtoResponse updateEntity(@Valid @RequestBody UserDtoRequest dtoRequest, @PathVariable("id") Long id) throws EntityNotFoundException, InvalidDataException {
+    public UserDtoResponse updateEntity(@Valid @RequestBody UserDtoRequest dtoRequest, @PathVariable("id") Long id) throws EntityNotFoundException, InvalidDataException, AccessDeniedException {
         return service.updateEntity(dtoRequest, id);
     }
 
     @Operation(summary = "Delete user")
-    @PreAuthorize("hasRole('ADMIN') or " + IS_OWNER)
+    @PreAuthorize("hasRole('ADMIN') or @userServiceImpl.isOwnerOrEmpty(#id)")
     @DeleteMapping("/{id}")
-    public HttpStatus deleteEntity(@PathVariable("id") Long id)  {
+    public HttpStatus deleteEntity(@PathVariable("id") Long id) throws EntityNotFoundException {
         service.deleteEntity(id);
         return HttpStatus.NO_CONTENT;
     }

@@ -9,7 +9,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.PreRemove;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -80,21 +79,5 @@ public class Profile implements AppEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, firstname, lastname, createdDate);
-    }
-
-    @Override
-    public String toString() {
-        return "Profile{" +
-                "id=" + id +
-                ", firstname='" + firstname + '\'' +
-                ", lastname='" + lastname + '\'' +
-                ", createdDate=" + createdDate +
-                '}';
-    }
-
-    @PreRemove
-    private void onRemove() {
-        groups.forEach(group -> group.getParticipants().remove(this));
-        chats.forEach(chat -> chat.getParticipants().remove(this));
     }
 }
