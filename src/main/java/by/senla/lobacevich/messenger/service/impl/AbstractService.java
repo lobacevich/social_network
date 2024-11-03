@@ -52,7 +52,7 @@ public class AbstractService<Q, P, E extends AppEntity, R extends JpaRepository<
     }
 
     @Override
-    public void deleteEntity(Long id) throws EntityNotFoundException {
+    public void deleteUserAndProfile(Long id) throws EntityNotFoundException {
         repository.deleteById(id);
     }
 

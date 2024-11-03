@@ -65,17 +65,17 @@ public class RequestFriendshipController {
     @PreAuthorize("hasRole('ADMIN') or @requestFriendshipServiceImpl.isOwnerOrEmpty(#id)")
     @DeleteMapping("/{id}")
     public HttpStatus deleteEntity(@PathVariable("id") Long id) throws EntityNotFoundException {
-        service.deleteEntity(id);
+        service.deleteUserAndProfile(id);
         return HttpStatus.NO_CONTENT;
     }
 
     @Operation(summary = "Get friend requests by id and status")
     @GetMapping("/search")
-    public List<RequestFriendshipDtoResponse> getFriends(
+    public List<RequestFriendshipDtoResponse> searchRequests(
             @RequestParam(value = "page_size", defaultValue = "20", required = false) int pageSize,
             @RequestParam(value = "page_number", defaultValue = "0", required = false) int pageNumber,
             @RequestParam(value = "profile_id", defaultValue = "0", required = false) Long profileId,
             @RequestParam(value = "status", defaultValue = "APPROVED", required = false) RequestStatus status) throws EntityNotFoundException {
-        return service.getFriends(pageSize, pageNumber, profileId, status);
+        return service.searchRequests(pageSize, pageNumber, profileId, status);
     }
 }

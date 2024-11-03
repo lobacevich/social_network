@@ -11,5 +11,5 @@ import java.util.List;
 public interface RequestFriendshipService extends GenericService<RequestFriendshipDtoRequest,
         RequestFriendshipDtoResponse, RequestFriendship>{
 
-    List<RequestFriendshipDtoResponse> getFriends(int pageSize, int pageNumber, Long profileId, RequestStatus status) throws EntityNotFoundException;
+    List<RequestFriendshipDtoResponse> searchRequests(int pageSize, int pageNumber, Long profileId, RequestStatus status) throws EntityNotFoundException;
 }

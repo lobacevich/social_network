@@ -61,7 +61,7 @@ public class CommentController {
     @PreAuthorize("hasRole('ADMIN') or @commentServiceImpl.isOwnerOrEmpty(#id)")
     @DeleteMapping("/{id}")
     public HttpStatus deleteEntity(@PathVariable("id") Long id) throws EntityNotFoundException {
-        service.deleteEntity(id);
+        service.deleteUserAndProfile(id);
         return HttpStatus.NO_CONTENT;
     }
 }

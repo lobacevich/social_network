@@ -80,13 +80,13 @@ public class UserServiceImpl extends AbstractService<UserDtoRequest, UserDtoResp
 
     @Transactional
     @Override
-    public void deleteEntity(Long id) throws EntityNotFoundException {
+    public void deleteUserAndProfile(Long id) throws EntityNotFoundException {
         Profile profile = profileRepository.findByUsername(findEntityById(id).getUsername()).orElseThrow(() ->
                 new EntityNotFoundException("Profile with id " + id + " not found"));
         chatProfileRepository.deleteByProfileId(profile.getId());
         groupParticipantRepository.deleteByProfileId(profile.getId());
         profileRepository.deleteById(profile.getId());
-        super.deleteEntity(id);
+        super.deleteUserAndProfile(id);
     }
 
     public boolean isOwnerOrEmpty(Long id) {

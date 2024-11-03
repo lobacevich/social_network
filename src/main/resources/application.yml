@@ -7,8 +7,6 @@ spring:
 
   liquibase:
     enabled: true
-    drop-first: true
-    default-schema: mes
     change-log: classpath:db/changelog-master.yaml
 
   jpa:

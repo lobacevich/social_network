@@ -63,7 +63,7 @@ public class MessageController {
     @PreAuthorize("hasRole('ADMIN') or @messageServiceImpl.isOwnerOrEmpty(#id)")
     @DeleteMapping("/{id}")
     public HttpStatus deleteEntity(@PathVariable("id") Long id) throws EntityNotFoundException {
-        service.deleteEntity(id);
+        service.deleteUserAndProfile(id);
         return HttpStatus.NO_CONTENT;
     }
 }

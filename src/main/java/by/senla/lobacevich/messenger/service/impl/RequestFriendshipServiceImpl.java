@@ -74,7 +74,7 @@ public class RequestFriendshipServiceImpl extends AbstractService<RequestFriends
     }
 
     @Override
-    public List<RequestFriendshipDtoResponse> getFriends(int pageSize, int pageNumber, Long profileId, RequestStatus status) throws EntityNotFoundException {
+    public List<RequestFriendshipDtoResponse> searchRequests(int pageSize, int pageNumber, Long profileId, RequestStatus status) throws EntityNotFoundException {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Page<RequestFriendship> result;
 

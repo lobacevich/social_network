@@ -56,7 +56,7 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN') or @userServiceImpl.isOwnerOrEmpty(#id)")
     @DeleteMapping("/{id}")
     public HttpStatus deleteEntity(@PathVariable("id") Long id) throws EntityNotFoundException {
-        service.deleteEntity(id);
+        service.deleteUserAndProfile(id);
         return HttpStatus.NO_CONTENT;
     }
 

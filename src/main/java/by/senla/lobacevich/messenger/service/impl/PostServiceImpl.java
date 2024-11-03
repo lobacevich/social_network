@@ -23,15 +23,14 @@ import java.time.LocalDateTime;
 public class PostServiceImpl extends AbstractService<PostDtoRequest, DetailedPostDtoResponse, Post,
         PostRepository, PostMapper> implements PostService {
 
-    @Autowired
-    private ProfileService profileService;
+    private final ProfileService profileService;
+    private final GroupService groupService;
 
     @Autowired
-    private GroupService groupService;
-
-    @Autowired
-    public PostServiceImpl(PostRepository repository, PostMapper mapper) {
+    public PostServiceImpl(PostRepository repository, PostMapper mapper, ProfileService profileService, GroupService groupService) {
         super(repository, mapper);
+        this.profileService = profileService;
+        this.groupService = groupService;
     }
 
     @Override
