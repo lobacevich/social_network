@@ -3,9 +3,12 @@ package by.senla.lobacevich.messenger.service.impl;
 import by.senla.lobacevich.messenger.dto.request.ProfileDtoRequest;
 import by.senla.lobacevich.messenger.dto.response.DetailedProfileDtoResponse;
 import by.senla.lobacevich.messenger.entity.Profile;
+import by.senla.lobacevich.messenger.entity.User;
 import by.senla.lobacevich.messenger.exception.AccessDeniedException;
 import by.senla.lobacevich.messenger.exception.EntityNotFoundException;
 import by.senla.lobacevich.messenger.mapper.ProfileMapper;
+import by.senla.lobacevich.messenger.repository.ChatProfileRepository;
+import by.senla.lobacevich.messenger.repository.GroupParticipantRepository;
 import by.senla.lobacevich.messenger.repository.ProfileRepository;
 import by.senla.lobacevich.messenger.security.SecurityUtils;
 import by.senla.lobacevich.messenger.service.ProfileService;
@@ -14,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -22,9 +26,14 @@ import java.util.stream.Collectors;
 public class ProfileServiceImpl extends AbstractService<ProfileDtoRequest, DetailedProfileDtoResponse, Profile,
         ProfileRepository, ProfileMapper> implements ProfileService {
 
+    private final ChatProfileRepository chatProfileRepository;
+    private final GroupParticipantRepository groupParticipantRepository;
+
     @Autowired
-    public ProfileServiceImpl(ProfileRepository repository, ProfileMapper mapper) {
+    public ProfileServiceImpl(ProfileRepository repository, ProfileMapper mapper, ChatProfileRepository chatProfileRepository, GroupParticipantRepository groupParticipantRepository) {
         super(repository, mapper);
+        this.chatProfileRepository = chatProfileRepository;
+        this.groupParticipantRepository = groupParticipantRepository;
     }
 
     @Override
@@ -54,5 +63,20 @@ public class ProfileServiceImpl extends AbstractService<ProfileDtoRequest, Detai
     public Profile getProfileByUsername(String username) throws EntityNotFoundException {
         return repository.findByUsername(username).orElseThrow(() ->
                 new EntityNotFoundException("Profile not found by username " + username));
+    }
+
+    @Override
+    public DetailedProfileDtoResponse createEntity(User user) {
+        Profile profile = new Profile();
+        profile.setUser(user);
+        profile.setCreatedDate(LocalDateTime.now());
+        return mapper.entityToDto(repository.save(profile));
+    }
+
+    @Override
+    public void deleteEntity(Long id) throws EntityNotFoundException {
+        chatProfileRepository.deleteByProfileId(id);
+        groupParticipantRepository.deleteByProfileId(id);
+        super.deleteEntity(id);
     }
 }

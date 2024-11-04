@@ -109,7 +109,7 @@ class PostServiceImplTest {
 
         DetailedPostDtoResponse actual = service.createEntity(requestDto);
 
-        verify(repository).save(entity);
+        verify(repository, times(1)).save(entity);
         assertEquals(responseDto, actual);
     }
 
@@ -149,7 +149,7 @@ class PostServiceImplTest {
 
         DetailedPostDtoResponse actual = service.updateEntity(requestDto, ID_ONE);
 
-        verify(repository).save(entity);
+        verify(repository, times(1)).save(entity);
         assertEquals(responseDto, actual);
     }
 
@@ -162,9 +162,9 @@ class PostServiceImplTest {
 
     @Test
     void deleteEntity_ShouldCallDeleteByIdMethodOfRepository() throws EntityNotFoundException {
-        service.deleteUserAndProfile(ID_ONE);
+        service.deleteEntity(ID_ONE);
 
-        verify(repository).deleteById(ID_ONE);
+        verify(repository, times(1)).deleteById(ID_ONE);
     }
 
     @Test

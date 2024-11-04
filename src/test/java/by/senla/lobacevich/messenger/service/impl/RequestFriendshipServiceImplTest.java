@@ -107,7 +107,7 @@ class RequestFriendshipServiceImplTest {
 
         RequestFriendshipDtoResponse actual = service.createEntity(requestDto);
 
-        verify(repository).save(any(RequestFriendship.class));
+        verify(repository, times(1)).save(any(RequestFriendship.class));
         assertEquals(responseDto, actual);
     }
 
@@ -159,7 +159,7 @@ class RequestFriendshipServiceImplTest {
 
     @Test
     void deleteEntity_ShouldCallDeleteByIdMethodOfRepository() throws EntityNotFoundException {
-        service.deleteUserAndProfile(ID_ONE);
+        service.deleteEntity(ID_ONE);
 
         verify(repository, times(1)).deleteById(ID_ONE);
     }

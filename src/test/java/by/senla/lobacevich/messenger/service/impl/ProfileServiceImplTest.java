@@ -3,9 +3,12 @@ package by.senla.lobacevich.messenger.service.impl;
 import by.senla.lobacevich.messenger.dto.request.ProfileDtoRequest;
 import by.senla.lobacevich.messenger.dto.response.DetailedProfileDtoResponse;
 import by.senla.lobacevich.messenger.entity.Profile;
+import by.senla.lobacevich.messenger.entity.User;
 import by.senla.lobacevich.messenger.exception.AccessDeniedException;
 import by.senla.lobacevich.messenger.exception.EntityNotFoundException;
 import by.senla.lobacevich.messenger.mapper.ProfileMapper;
+import by.senla.lobacevich.messenger.repository.ChatProfileRepository;
+import by.senla.lobacevich.messenger.repository.GroupParticipantRepository;
 import by.senla.lobacevich.messenger.repository.ProfileRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +28,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -54,6 +58,15 @@ class ProfileServiceImplTest {
     private Profile entity;
 
     @Mock
+    private ChatProfileRepository chatProfileRepository;
+
+    @Mock
+    private GroupParticipantRepository groupParticipantRepository;
+
+    @Mock
+    private User user;
+
+    @Mock
     private SecurityContext securityContext;
 
     @Mock
@@ -70,6 +83,17 @@ class ProfileServiceImplTest {
     @AfterEach
     void tearDown() {
         SecurityContextHolder.clearContext();
+    }
+
+    @Test
+    void createEntity_ShouldCallCreateMethodAndReturnProfileDtoResponse() {
+        when(repository.save(any(Profile.class))).thenReturn(entity);
+        when(mapper.entityToDto(entity)).thenReturn(responseDto);
+
+        DetailedProfileDtoResponse actual = service.createEntity(user);
+
+        verify(repository, times(1)).save(any(Profile.class));
+        assertEquals(responseDto, actual);
     }
 
     @Test
@@ -101,7 +125,7 @@ class ProfileServiceImplTest {
 
         DetailedProfileDtoResponse actual = service.updateEntity(requestDto, ID_ONE);
 
-        verify(repository).save(entity);
+        verify(repository, times(1)).save(entity);
         assertEquals(responseDto, actual);
     }
 
@@ -124,6 +148,14 @@ class ProfileServiceImplTest {
         assertThrows(AccessDeniedException.class, () -> service.updateEntity(requestDto, ID_TWO));
     }
 
+    @Test
+    void deleteEntity_ShouldCallDeleteMethods() throws EntityNotFoundException {
+        service.deleteEntity(ID_ONE);
+
+        verify(chatProfileRepository, times(1)).deleteByProfileId(ID_ONE);
+        verify(groupParticipantRepository, times(1)).deleteByProfileId(ID_ONE);
+        verify(repository, times(1)).deleteById(ID_ONE);
+    }
 
     @Test
     void findAll_ShouldCallFindAllMethodOfRepository() {

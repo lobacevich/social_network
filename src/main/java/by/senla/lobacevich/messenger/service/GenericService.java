@@ -16,7 +16,7 @@ public interface GenericService<Q, P, E> {
 
     List<P> findAll(int pageSize, int pageNumber);
 
-    void deleteUserAndProfile(Long id) throws EntityNotFoundException;
+    void deleteEntity(Long id) throws EntityNotFoundException;
 
     E findEntityById(Long id) throws EntityNotFoundException;
 }

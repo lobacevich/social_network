@@ -8,13 +8,10 @@ import by.senla.lobacevich.messenger.entity.User;
 import by.senla.lobacevich.messenger.entity.enums.Role;
 import by.senla.lobacevich.messenger.exception.EntityNotFoundException;
 import by.senla.lobacevich.messenger.exception.InvalidDataException;
-import by.senla.lobacevich.messenger.mapper.ProfileMapper;
 import by.senla.lobacevich.messenger.mapper.UserMapper;
-import by.senla.lobacevich.messenger.repository.ChatProfileRepository;
-import by.senla.lobacevich.messenger.repository.GroupParticipantRepository;
-import by.senla.lobacevich.messenger.repository.ProfileRepository;
 import by.senla.lobacevich.messenger.repository.UserRepository;
 import by.senla.lobacevich.messenger.security.SecurityUtils;
+import by.senla.lobacevich.messenger.service.ProfileService;
 import by.senla.lobacevich.messenger.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -22,27 +19,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-
 @Service
 public class UserServiceImpl extends AbstractService<UserDtoRequest, UserDtoResponse, User,
         UserRepository, UserMapper> implements UserService {
 
     private final PasswordEncoder passwordEncoder;
-    private final ProfileRepository profileRepository;
-    private final ProfileMapper profileMapper;
-    private final ChatProfileRepository chatProfileRepository;
-    private final GroupParticipantRepository groupParticipantRepository;
+    private final ProfileService profileService;
 
     @Autowired
-    public UserServiceImpl(UserRepository repository, UserMapper mapper, PasswordEncoder passwordEncoder,
-                           ProfileRepository profileRepository, ProfileMapper profileMapper, ChatProfileRepository chatProfileRepository, GroupParticipantRepository groupParticipantRepository) {
+    public UserServiceImpl(UserRepository repository, UserMapper mapper, PasswordEncoder passwordEncoder, ProfileService profileService) {
         super(repository, mapper);
         this.passwordEncoder = passwordEncoder;
-        this.profileRepository = profileRepository;
-        this.profileMapper = profileMapper;
-        this.chatProfileRepository = chatProfileRepository;
-        this.groupParticipantRepository = groupParticipantRepository;
+        this.profileService = profileService;
     }
 
     @Transactional
@@ -56,10 +44,7 @@ public class UserServiceImpl extends AbstractService<UserDtoRequest, UserDtoResp
         } catch (DataIntegrityViolationException e) {
             throw new InvalidDataException("Duplicate username or email");
         }
-        Profile profile = new Profile();
-        profile.setUser(user);
-        profile.setCreatedDate(LocalDateTime.now());
-        return profileMapper.entityToDto(profileRepository.save(profile));
+        return profileService.createEntity(user);
     }
 
     @Override
@@ -80,13 +65,10 @@ public class UserServiceImpl extends AbstractService<UserDtoRequest, UserDtoResp
 
     @Transactional
     @Override
-    public void deleteUserAndProfile(Long id) throws EntityNotFoundException {
-        Profile profile = profileRepository.findByUsername(findEntityById(id).getUsername()).orElseThrow(() ->
-                new EntityNotFoundException("Profile with id " + id + " not found"));
-        chatProfileRepository.deleteByProfileId(profile.getId());
-        groupParticipantRepository.deleteByProfileId(profile.getId());
-        profileRepository.deleteById(profile.getId());
-        super.deleteUserAndProfile(id);
+    public void deleteEntity(Long id) throws EntityNotFoundException {
+        Profile profile = profileService.getProfileByUsername(findEntityById(id).getUsername());
+        profileService.deleteEntity(profile.getId());
+        super.deleteEntity(id);
     }
 
     public boolean isOwnerOrEmpty(Long id) {

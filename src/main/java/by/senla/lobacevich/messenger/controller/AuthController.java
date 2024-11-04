@@ -12,7 +12,6 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -35,19 +35,20 @@ public class AuthController {
     private final JWTTokenProvider jwtTokenProvider;
 
     @Operation(summary = "Register a new user")
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/signup")
-    public ResponseEntity<DetailedProfileDtoResponse> registerUser(@Valid @RequestBody UserDtoRequest request) throws InvalidDataException, EntityNotFoundException, AccessDeniedException {
-        return new ResponseEntity<>(service.createUserAndProfile(request), HttpStatus.CREATED);
+    public DetailedProfileDtoResponse registerUser(@Valid @RequestBody UserDtoRequest request) throws InvalidDataException, EntityNotFoundException, AccessDeniedException {
+        return service.createUserAndProfile(request);
     }
 
     @Operation(summary = "User log in")
     @PostMapping("/login")
-    public ResponseEntity<String> authenticateUser(@RequestBody UserDtoRequest request) {
+    public String authenticateUser(@RequestBody UserDtoRequest request) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 request.username(),
                 request.password()
         ));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return ResponseEntity.ok(TOKEN_PREFIX + jwtTokenProvider.generateToken(authentication));
+        return TOKEN_PREFIX + jwtTokenProvider.generateToken(authentication);
     }
 }

@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -47,9 +47,10 @@ public class PostController {
     }
 
     @Operation(summary = "Create post")
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ResponseEntity<DetailedPostDtoResponse> createEntity(@Valid @RequestBody PostDtoRequest dtoRequest) throws EntityNotFoundException, InvalidDataException, AccessDeniedException {
-        return new ResponseEntity<>(service.createEntity(dtoRequest), HttpStatus.CREATED);
+    public DetailedPostDtoResponse createEntity(@Valid @RequestBody PostDtoRequest dtoRequest) throws EntityNotFoundException, InvalidDataException, AccessDeniedException {
+        return service.createEntity(dtoRequest);
     }
 
     @Operation(summary = "Update post")
@@ -60,10 +61,10 @@ public class PostController {
     }
 
     @Operation(summary = "Delete post")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ADMIN') or @postServiceImpl.isOwnerOrEmpty(#id)")
     @DeleteMapping("/{id}")
-    public HttpStatus deleteEntity(@PathVariable("id") Long id) throws EntityNotFoundException {
-        service.deleteUserAndProfile(id);
-        return HttpStatus.NO_CONTENT;
+    public void deleteEntity(@PathVariable("id") Long id) throws EntityNotFoundException {
+        service.deleteEntity(id);
     }
 }

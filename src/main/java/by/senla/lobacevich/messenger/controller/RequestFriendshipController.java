@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +20,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -48,9 +48,10 @@ public class RequestFriendshipController {
     }
 
     @Operation(summary = "Create friendship request")
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ResponseEntity<RequestFriendshipDtoResponse> createEntity(@Valid @RequestBody RequestFriendshipDtoRequest dtoRequest) throws EntityNotFoundException, InvalidDataException, AccessDeniedException {
-        return new ResponseEntity<>(service.createEntity(dtoRequest), HttpStatus.CREATED);
+    public RequestFriendshipDtoResponse createEntity(@Valid @RequestBody RequestFriendshipDtoRequest dtoRequest) throws EntityNotFoundException, InvalidDataException, AccessDeniedException {
+        return service.createEntity(dtoRequest);
     }
 
     @Operation(summary = "Update friendship request")
@@ -62,11 +63,11 @@ public class RequestFriendshipController {
     }
 
     @Operation(summary = "Delete friendship request")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ADMIN') or @requestFriendshipServiceImpl.isOwnerOrEmpty(#id)")
     @DeleteMapping("/{id}")
-    public HttpStatus deleteEntity(@PathVariable("id") Long id) throws EntityNotFoundException {
-        service.deleteUserAndProfile(id);
-        return HttpStatus.NO_CONTENT;
+    public void deleteEntity(@PathVariable("id") Long id) throws EntityNotFoundException {
+        service.deleteEntity(id);
     }
 
     @Operation(summary = "Get friend requests by id and status")

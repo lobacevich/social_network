@@ -7,12 +7,9 @@ import by.senla.lobacevich.messenger.entity.Profile;
 import by.senla.lobacevich.messenger.entity.User;
 import by.senla.lobacevich.messenger.exception.EntityNotFoundException;
 import by.senla.lobacevich.messenger.exception.InvalidDataException;
-import by.senla.lobacevich.messenger.mapper.ProfileMapper;
 import by.senla.lobacevich.messenger.mapper.UserMapper;
-import by.senla.lobacevich.messenger.repository.ChatProfileRepository;
-import by.senla.lobacevich.messenger.repository.GroupParticipantRepository;
-import by.senla.lobacevich.messenger.repository.ProfileRepository;
 import by.senla.lobacevich.messenger.repository.UserRepository;
+import by.senla.lobacevich.messenger.service.ProfileService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,7 +31,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -64,10 +60,7 @@ class UserServiceImplTest {
     private User entity;
 
     @Mock
-    private ProfileRepository profileRepository;
-
-    @Mock
-    private ProfileMapper profileMapper;
+    private ProfileService profileService;
 
     @Mock
     private Profile profile;
@@ -77,12 +70,6 @@ class UserServiceImplTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
-
-    @Mock
-    private ChatProfileRepository chatProfileRepository;
-
-    @Mock
-    private GroupParticipantRepository groupParticipantRepository;
 
     @Mock
     private SecurityContext securityContext;
@@ -104,15 +91,14 @@ class UserServiceImplTest {
     }
 
     @Test
-    void createUserAndProfile_ShouldCallSaveMethodOfUserRepositoryAndProfileRepositoryAndReturnProfileDtoResponse() throws InvalidDataException {
+    void createUserAndProfile_ShouldCallSaveMethodOfUserRepositoryAndProfileServiceAndReturnProfileDtoResponse() throws InvalidDataException {
         when(mapper.dtoToEntity(requestDto)).thenReturn(entity);
-        when(profileRepository.save(any(Profile.class))).thenReturn(profile);
-        when(profileMapper.entityToDto(profile)).thenReturn(profileDtoResponse);
+        when(profileService.createEntity(entity)).thenReturn(profileDtoResponse);
 
         DetailedProfileDtoResponse actual = service.createUserAndProfile(requestDto);
 
         verify(repository, times(1)).save(entity);
-        verify(profileRepository, times(1)).save(any(Profile.class));
+        verify(profileService, times(1)).createEntity(entity);
         assertEquals(profileDtoResponse, actual);
     }
 
@@ -141,7 +127,7 @@ class UserServiceImplTest {
 
         UserDtoResponse actual = service.updateEntity(requestDto, ID_ONE);
 
-        verify(repository).save(entity);
+        verify(repository, times(1)).save(entity);
         assertEquals(responseDto, actual);
     }
 
@@ -153,18 +139,16 @@ class UserServiceImplTest {
     }
 
     @Test
-    void deleteUserAndProfile_ShouldCallDeleteByIdMethodsOfRepositories() throws EntityNotFoundException {
+    void deleteUserAndProfile_ShouldCallDeleteByIdMethodAndDeleteByIdMethodOfProfileService() throws EntityNotFoundException {
         when(repository.findById(ID_ONE)).thenReturn(Optional.of(entity));
         when(entity.getUsername()).thenReturn(USER_NAME);
-        when(profileRepository.findByUsername(USER_NAME)).thenReturn(Optional.of(profile));
+        when(profileService.getProfileByUsername(USER_NAME)).thenReturn(profile);
         when(profile.getId()).thenReturn(ID_ONE);
 
-        service.deleteUserAndProfile(ID_ONE);
+        service.deleteEntity(ID_ONE);
 
-        verify(chatProfileRepository, times(1)).deleteByProfileId(ID_ONE);
-        verify(groupParticipantRepository, times(1)).deleteByProfileId(ID_ONE);
-        verify(profileRepository, times(1)).deleteById(ID_ONE);
-        verify(repository).deleteById(ID_ONE);
+        verify(profileService, times(1)).deleteEntity(ID_ONE);
+        verify(repository, times(1)).deleteById(ID_ONE);
     }
 
     @Test
